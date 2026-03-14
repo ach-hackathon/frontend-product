@@ -13,6 +13,7 @@ export default function App() {
         <Route path="/code/confirm" element={<ConfirmCodePage />} />
         <Route path="/code/sent" element={<CodeSentPage />} />
         <Route path="/error" element={<ErrorPage />} />
+        TEST
 
         {/* Защищённые страницы с общим layout */}
         <Route element={<AuthGuard />}>
