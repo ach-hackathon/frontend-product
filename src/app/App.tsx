@@ -6,6 +6,8 @@ import { HomePage } from '@/pages/home'
 import { ProfilePage } from '@/pages/profile'
 import { EventPage } from '@/pages/event'
 import { TaskPage } from '@/pages/task'
+import { AchievementsPage } from '@/pages/achievements'
+import { ScanPage } from '@/pages/scan'
 import { LoginPage } from '@/pages/login'
 import { ConfirmCodePage } from '@/pages/confirm-code'
 import { CodeSentPage } from '@/pages/code-sent'
@@ -26,6 +28,8 @@ export function App() {
           <Route element={<UserProvider />}>
             <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
+              <Route path="/achievements" element={<AchievementsPage />} />
+              <Route path="/scan" element={<ScanPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/event/:id" element={<EventPage />} />
               <Route path="/task/:id" element={<TaskPage />} />

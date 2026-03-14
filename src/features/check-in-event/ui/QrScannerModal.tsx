@@ -1,6 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Html5Qrcode } from 'html5-qrcode'
 import { BottomSheet } from '@/shared/ui/BottomSheet'
+import { QrScannerView } from './QrScannerView'
 import styles from './QrScannerModal.module.css'
 
 interface QrScannerModalProps {
@@ -8,51 +7,7 @@ interface QrScannerModalProps {
   onClose: () => void
 }
 
-const SCANNER_ID = 'qr-scanner-container'
-
 export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
-  const scannerRef = useRef<Html5Qrcode | null>(null)
-  const scannedRef = useRef(false)
-  const onScanRef = useRef(onScan)
-  const [isReady, setIsReady] = useState(false)
-  const [cameraError, setCameraError] = useState<string | null>(null)
-  useLayoutEffect(() => {
-    onScanRef.current = onScan
-  })
-
-  useEffect(() => {
-    const scanner = new Html5Qrcode(SCANNER_ID)
-    scannerRef.current = scanner
-
-    scanner
-      .start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          if (scannedRef.current) return
-          scannedRef.current = true
-          void scanner.stop().finally(() => {
-            onScanRef.current(decodedText)
-          })
-        },
-        undefined,
-      )
-      .then(() => setIsReady(true))
-      .catch((err: unknown) => {
-        const msg = err instanceof Error ? err.message : String(err)
-        setCameraError(msg.toLowerCase().includes('permission')
-          ? 'Нет доступа к камере. Разрешите доступ в настройках браузера.'
-          : 'Не удалось запустить камеру. Попробуйте ещё раз.'
-        )
-      })
-
-    return () => {
-      if (scannerRef.current?.isScanning) {
-        void scannerRef.current.stop().catch(console.error)
-      }
-    }
-  }, [])
-
   return (
     <BottomSheet onClose={onClose}>
       <div className={styles.content}>
@@ -60,18 +15,7 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
           <h2 className={styles.title}>Сканируйте QR-код</h2>
           <button className={styles.closeButton} onClick={onClose}>✕</button>
         </div>
-        {cameraError ? (
-          <div className={styles.cameraError}>{cameraError}</div>
-        ) : (
-          <div className={styles.scannerWrapper}>
-            {!isReady && <div className={styles.skeleton} />}
-            <div
-              id={SCANNER_ID}
-              className={styles.scanner}
-              style={isReady ? undefined : { position: 'absolute', opacity: 0, pointerEvents: 'none' }}
-            />
-          </div>
-        )}
+        <QrScannerView onScan={onScan} />
         <p className={styles.hint}>Наведите камеру на QR-код задания</p>
       </div>
     </BottomSheet>

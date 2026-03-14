@@ -4,72 +4,96 @@
   min-height: 100dvh;
 }
 
-/* ─── Header ─────────────────────────────────────────────────────────────── */
-
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: var(--color-surface);
-  border-bottom: 2px solid var(--color-border);
-}
-
-.headerInner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 6rem;
-}
-
-.logo {
-  font-size: var(--text-xl);
-  font-weight: 900;
-  color: var(--color-primary);
-  letter-spacing: -0.01em;
-}
-
-/* ─── Profile ────────────────────────────────────────────────────────────── */
-
-.profile {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  border-radius: var(--radius-full);
-  padding: var(--space-1) var(--space-2);
-  transition: background-color 0.15s;
-}
-
-.profile:hover {
-  background-color: rgba(88, 204, 2, 0.08);
-}
-
-.profileName {
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--color-text-muted);
-  max-width: 16rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3.8rem;
-  height: 3.8rem;
-  border-radius: var(--radius-full);
-  background-color: var(--color-primary);
-  border: 3px solid var(--color-primary-shadow);
-  color: var(--color-primary-text);
-  font-size: var(--text-sm);
-  font-weight: 800;
-  flex-shrink: 0;
-}
-
 /* ─── Content ────────────────────────────────────────────────────────────── */
 
 .content {
   flex: 1;
+  /* Reserve space for bottom nav (5.6rem) + safe area */
+  padding-bottom: calc(5.6rem + env(safe-area-inset-bottom));
+}
+
+/* ─── Scan pending toast ─────────────────────────────────────────────────── */
+
+.scanPending {
+  position: fixed;
+  bottom: calc(7rem + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  z-index: 200;
+}
+
+/* ─── Scan result overlay ────────────────────────────────────────────────── */
+
+.scanResultOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+}
+
+.scanResultCard {
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-bottom: 4px solid var(--color-border-shadow);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-5);
+  width: 100%;
+  max-width: 32rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.scanResultIcon {
+  font-size: 4.8rem;
+  line-height: 1;
+}
+
+.scanResultTitle {
+  font-size: var(--text-xl);
+  font-weight: 900;
+  color: var(--color-text);
+}
+
+.scanResultPoints {
+  font-size: var(--text-lg);
+  font-weight: 900;
+  color: var(--color-primary);
+}
+
+.scanResultBadge {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-xp-text);
+  background: var(--color-xp);
+  border: 1.5px solid var(--color-xp-shadow);
+  border-radius: var(--radius-full);
+  padding: 0.3rem 1rem;
+}
+
+.scanResultClose {
+  margin-top: var(--space-2);
+  width: 100%;
+  padding: var(--space-3);
+  background: var(--color-primary);
+  border: 2px solid var(--color-primary-shadow);
+  border-bottom: 4px solid var(--color-primary-shadow);
+  border-radius: var(--radius-full);
+  color: var(--color-primary-text);
+  font-size: var(--text-base);
+  font-weight: 800;
+  cursor: pointer;
 }

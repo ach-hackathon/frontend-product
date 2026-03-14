@@ -1,0 +1,102 @@
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  background-color: var(--color-surface);
+  border-top: 2px solid var(--color-border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ─── Regular tab ────────────────────────────────────────────────────────── */
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: var(--space-2) var(--space-1) var(--space-3);
+  min-height: 6rem;
+  color: #c4c4c4;
+  text-decoration: none;
+  transition: color 0.18s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.tab:active {
+  opacity: 0.65;
+}
+
+.tabActive {
+  color: var(--color-primary);
+}
+
+/* ─── Icon pill ──────────────────────────────────────────────────────────── */
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  transition: background-color 0.18s;
+}
+
+.tabActive .iconWrap {
+  background-color: rgba(88, 204, 2, 0.13);
+}
+
+/* ─── Label ──────────────────────────────────────────────────────────────── */
+
+.label {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  transition: color 0.18s;
+}
+
+/* ─── Scanner tab ────────────────────────────────────────────────────────── */
+
+.scanTab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: var(--space-3);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.scanCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.6rem;
+  height: 5.6rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(145deg, #6ddd0a, #47a800);
+  border: 3px solid #3b9200;
+  box-shadow: 0 4px 12px rgba(88, 204, 2, 0.45), 0 2px 0 #3b9200;
+  color: #fff;
+  margin-top: -2.4rem;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s;
+}
+
+.scanTab:active .scanCircle {
+  transform: scale(0.91) translateY(2px);
+  box-shadow: 0 2px 6px rgba(88, 204, 2, 0.3), 0 1px 0 #3b9200;
+}
+
+.scanTabActive .scanCircle {
+  background: linear-gradient(145deg, #58cc02, #3ba300);
+}
