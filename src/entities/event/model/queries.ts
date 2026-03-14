@@ -1,14 +1,14 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { apiClient } from '@/shared/api/client'
-import type { ChallengeInfoResponse, ChallengeListResponse } from './types'
+import type { EventInfoResponse, EventListResponse } from './types'
 
 const PAGE_SIZE = 9
 
-export function useChallenges() {
+export function useEvents() {
   return useInfiniteQuery({
-    queryKey: ['challenges'],
+    queryKey: ['events'],
     queryFn: ({ pageParam }) =>
-      apiClient.get<ChallengeListResponse>('/campaign/list', {
+      apiClient.get<EventListResponse>('/campaign/list', {
         Limit: String(PAGE_SIZE),
         Offset: String(pageParam * PAGE_SIZE),
       }),
@@ -21,10 +21,10 @@ export function useChallenges() {
   })
 }
 
-export function useChallengeById(id: string) {
+export function useEventById(id: string) {
   return useQuery({
-    queryKey: ['challenge', id],
-    queryFn: () => apiClient.get<ChallengeInfoResponse>('/campaign/info', { Id: id }),
+    queryKey: ['event', id],
+    queryFn: () => apiClient.get<EventInfoResponse>('/campaign/info', { Id: id }),
     enabled: !!id,
   })
 }

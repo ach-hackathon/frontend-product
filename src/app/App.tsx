@@ -4,7 +4,7 @@ import { UserProvider } from './providers/UserProvider'
 import { Layout } from '@/widgets/layout'
 import { HomePage } from '@/pages/home'
 import { ProfilePage } from '@/pages/profile'
-import { ChallengePage } from '@/pages/challenge'
+import { EventPage } from '@/pages/event'
 import { LoginPage } from '@/pages/login'
 import { ConfirmCodePage } from '@/pages/confirm-code'
 import { CodeSentPage } from '@/pages/code-sent'
@@ -26,7 +26,7 @@ export function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/challenge/:id" element={<ChallengePage />} />
+              <Route path="/event/:id" element={<EventPage />} />
             </Route>
           </Route>
         </Route>

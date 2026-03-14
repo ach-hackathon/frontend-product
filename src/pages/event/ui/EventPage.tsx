@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { useChallengeById, ChallengeEventType, ChallengeEventCompletionCondition } from '@/entities/challenge'
-import type { ChallengeEventApiModel } from '@/entities/challenge'
+import { useEventById, EventTaskType, EventTaskCompletionCondition } from '@/entities/event'
+import type { EventTaskApiModel } from '@/entities/event'
 import { useImageUrl } from '@/shared/api/image'
-import styles from './ChallengePage.module.css'
+import styles from './EventPage.module.css'
 
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }).format(
@@ -11,17 +11,17 @@ function formatDate(iso: string): string {
 }
 
 function getConditionLabel(condition: number): string {
-  if (condition === ChallengeEventCompletionCondition.ScanQrCode) return '📷 QR-код'
-  if (condition === ChallengeEventCompletionCondition.VisitLocation) return '📍 Локация'
+  if (condition === EventTaskCompletionCondition.ScanQrCode) return '📷 QR-код'
+  if (condition === EventTaskCompletionCondition.VisitLocation) return '📍 Локация'
   return '❓'
 }
 
 function getTypeLabel(type: number): string {
-  if (type === ChallengeEventType.Multiple) return '🔁 Многократно'
+  if (type === EventTaskType.Multiple) return '🔁 Многократно'
   return ''
 }
 
-function EventStep({ event, index, isLast }: { event: ChallengeEventApiModel; index: number; isLast: boolean }) {
+function TaskStep({ task, index, isLast }: { task: EventTaskApiModel; index: number; isLast: boolean }) {
   return (
     <div className={styles.step}>
       <div className={styles.stepTrack}>
@@ -30,14 +30,14 @@ function EventStep({ event, index, isLast }: { event: ChallengeEventApiModel; in
       </div>
       <div className={styles.stepCard}>
         <div className={styles.stepHeader}>
-          <h3 className={styles.stepName}>{event.name ?? 'Без названия'}</h3>
-          <span className={styles.stepXp}>⚡ {event.pointsForCompletions} XP</span>
+          <h3 className={styles.stepName}>{task.name ?? 'Без названия'}</h3>
+          <span className={styles.stepXp}>⚡ {task.pointsForCompletions} XP</span>
         </div>
-        {event.description && <p className={styles.stepDescription}>{event.description}</p>}
+        {task.description && <p className={styles.stepDescription}>{task.description}</p>}
         <div className={styles.stepBadges}>
-          <span className={styles.conditionBadge}>{getConditionLabel(event.completionCondition)}</span>
-          {getTypeLabel(event.type) && (
-            <span className={styles.typeBadge}>{getTypeLabel(event.type)}</span>
+          <span className={styles.conditionBadge}>{getConditionLabel(task.completionCondition)}</span>
+          {getTypeLabel(task.type) && (
+            <span className={styles.typeBadge}>{getTypeLabel(task.type)}</span>
           )}
         </div>
       </div>
@@ -45,7 +45,7 @@ function EventStep({ event, index, isLast }: { event: ChallengeEventApiModel; in
   )
 }
 
-function ChallengeHero({ fileId }: { fileId: string | null }) {
+function EventHero({ fileId }: { fileId: string | null }) {
   const { data: imageUrl } = useImageUrl(fileId)
 
   return (
@@ -56,10 +56,10 @@ function ChallengeHero({ fileId }: { fileId: string | null }) {
   )
 }
 
-export function ChallengePage() {
+export function EventPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { data, isLoading, isError } = useChallengeById(id ?? '')
+  const { data, isLoading, isError } = useEventById(id ?? '')
 
   if (isLoading) {
     return (
@@ -81,19 +81,19 @@ export function ChallengePage() {
   if (isError || !data?.data?.entity) {
     return (
       <div className={`container ${styles.errorPage}`}>
-        <p className={styles.error}>Не удалось загрузить челлендж. Попробуйте позже.</p>
+        <p className={styles.error}>Не удалось загрузить событие. Попробуйте позже.</p>
       </div>
     )
   }
 
-  const challenge = data.data.entity
-  const events = challenge.events ?? []
+  const event = data.data.entity
+  const tasks = event.events ?? []
 
   return (
     <div className={styles.page}>
       {/* Full-bleed hero */}
       <div className={styles.heroWrapper}>
-        <ChallengeHero fileId={challenge.fileId} />
+        <EventHero fileId={event.fileId} />
         <div className={styles.heroOverlay} />
 
         <button className={styles.backButton} onClick={() => navigate(-1)}>
@@ -101,8 +101,8 @@ export function ChallengePage() {
         </button>
 
         <div className={`container ${styles.heroContent}`}>
-          <span className={styles.xpBadge}>⚡ {challenge.pointsForCompletions} XP</span>
-          <h1 className={styles.title}>{challenge.name ?? 'Без названия'}</h1>
+          <span className={styles.xpBadge}>⚡ {event.pointsForCompletions} XP</span>
+          <h1 className={styles.title}>{event.name ?? 'Без названия'}</h1>
         </div>
       </div>
 
@@ -111,28 +111,28 @@ export function ChallengePage() {
         {/* Meta bar */}
         <div className={styles.metaBar}>
           <span className={styles.metaChip}>
-            📅 {formatDate(challenge.startDate)}
-            {challenge.endDate ? ` — ${formatDate(challenge.endDate)}` : ''}
+            📅 {formatDate(event.startDate)}
+            {event.endDate ? ` — ${formatDate(event.endDate)}` : ''}
           </span>
-          {events.length > 0 && (
+          {tasks.length > 0 && (
             <span className={styles.metaChip}>
-              🎯 {events.length} {events.length === 1 ? 'задание' : events.length < 5 ? 'задания' : 'заданий'}
+              🎯 {tasks.length} {tasks.length === 1 ? 'задание' : tasks.length < 5 ? 'задания' : 'заданий'}
             </span>
           )}
         </div>
 
         {/* Description */}
-        {challenge.description && (
-          <p className={styles.description}>{challenge.description}</p>
+        {event.description && (
+          <p className={styles.description}>{event.description}</p>
         )}
 
-        {/* Events */}
-        {events.length > 0 && (
+        {/* Tasks */}
+        {tasks.length > 0 && (
           <section className={styles.eventsSection}>
             <h2 className={styles.eventsTitle}>Задания</h2>
             <div className={styles.stepsList}>
-              {events.map((event, i) => (
-                <EventStep key={event.id} event={event} index={i} isLast={i === events.length - 1} />
+              {tasks.map((task, i) => (
+                <TaskStep key={task.id} task={task} index={i} isLast={i === tasks.length - 1} />
               ))}
             </div>
           </section>

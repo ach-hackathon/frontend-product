@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { ChallengeCard, useChallenges } from '@/entities/challenge'
+import { EventCard, useEvents } from '@/entities/event'
 import styles from './HomePage.module.css'
 
 export function HomePage() {
-  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useChallenges()
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useEvents()
 
   const sentinelRef = useRef<HTMLDivElement>(null)
 
@@ -24,7 +24,7 @@ export function HomePage() {
     return () => observer.disconnect()
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
-  const challenges = data?.pages.flatMap((p) => p.data?.items ?? []) ?? []
+  const events = data?.pages.flatMap((p) => p.data?.items ?? []) ?? []
   const totalCount = data?.pages[0]?.data?.totalCount ?? 0
 
   if (isLoading) {
@@ -42,7 +42,7 @@ export function HomePage() {
   if (isError) {
     return (
       <div className={`container ${styles.page}`}>
-        <p className={styles.error}>Не удалось загрузить челленджи. Попробуйте позже.</p>
+        <p className={styles.error}>Не удалось загрузить события. Попробуйте позже.</p>
       </div>
     )
   }
@@ -50,17 +50,17 @@ export function HomePage() {
   return (
     <div className={`container ${styles.page}`}>
       <div className={styles.pageHeader}>
-        <h1 className={styles.title}>Челленджи</h1>
+        <h1 className={styles.title}>События</h1>
         {totalCount > 0 && <span className={styles.count}>{totalCount}</span>}
       </div>
 
-      {challenges.length === 0 ? (
-        <p className={styles.empty}>Челленджей пока нет.</p>
+      {events.length === 0 ? (
+        <p className={styles.empty}>Событий пока нет.</p>
       ) : (
         <>
           <div className={styles.grid}>
-            {challenges.map((challenge) => (
-              <ChallengeCard key={challenge.id} challenge={challenge} />
+            {events.map((event) => (
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
 

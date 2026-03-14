@@ -1,12 +1,12 @@
 import { useImageUrl } from '@/shared/api/image'
-import styles from './ChallengeImage.module.css'
+import styles from './EventImage.module.css'
 
-interface ChallengeImageProps {
+interface EventImageProps {
   fileId: string
   alt: string
 }
 
-export function ChallengeImage({ fileId, alt }: ChallengeImageProps) {
+export function EventImage({ fileId, alt }: EventImageProps) {
   const { data: url, isLoading, isError } = useImageUrl(fileId)
 
   if (isLoading) {

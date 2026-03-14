@@ -1,4 +1,4 @@
-export interface ChallengeEventApiModel {
+export interface EventTaskApiModel {
   id: string
   campaignId: string
   name: string | null
@@ -13,7 +13,7 @@ export interface ChallengeEventApiModel {
   completionCondition: number
 }
 
-export interface ChallengeApiModel {
+export interface EventApiModel {
   id: string
   name: string | null
   description: string | null
@@ -22,30 +22,30 @@ export interface ChallengeApiModel {
   pointsForCompletions: number
   applicationId: string
   fileId: string | null
-  events: ChallengeEventApiModel[] | null
+  events: EventTaskApiModel[] | null
 }
 
-export interface ChallengeListResponse {
+export interface EventListResponse {
   data: {
     totalCount: number
-    items: ChallengeApiModel[] | null
+    items: EventApiModel[] | null
   }
   error: unknown
 }
 
-export interface ChallengeInfoResponse {
+export interface EventInfoResponse {
   data: {
-    entity: ChallengeApiModel
+    entity: EventApiModel
   }
   error: unknown
 }
 
-export const ChallengeEventType = {
+export const EventTaskType = {
   Single: 1,
   Multiple: 2,
 } as const
 
-export const ChallengeEventCompletionCondition = {
+export const EventTaskCompletionCondition = {
   ScanQrCode: 1,
   VisitLocation: 2,
 } as const
