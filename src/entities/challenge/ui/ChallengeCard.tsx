@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { ChallengeApiModel } from '../model/types'
 import styles from './ChallengeCard.module.css'
 
@@ -13,7 +14,7 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
   const eventsCount = challenge.events?.length ?? 0
 
   return (
-    <div className={styles.card}>
+    <Link to={`/challenge/${challenge.id}`} className={styles.card}>
       <div className={styles.header}>
         <h2 className={styles.name}>{challenge.name ?? 'Без названия'}</h2>
         <span className={styles.xpBadge}>⚡ {challenge.pointsForCompletions} XP</span>
@@ -32,6 +33,6 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
           </span>
         )}
       </div>
-    </div>
+    </Link>
   )
 }

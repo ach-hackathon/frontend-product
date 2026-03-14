@@ -32,3 +32,20 @@ export interface ChallengeListResponse {
   }
   error: unknown
 }
+
+export interface ChallengeInfoResponse {
+  data: {
+    entity: ChallengeApiModel
+  }
+  error: unknown
+}
+
+export const ChallengeEventType = {
+  Single: 1,
+  Multiple: 2,
+} as const
+
+export const ChallengeEventCompletionCondition = {
+  ScanQrCode: 1,
+  VisitLocation: 2,
+} as const

@@ -1,6 +1,6 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { apiClient } from '@/shared/api/client'
-import type { ChallengeListResponse } from './types'
+import type { ChallengeInfoResponse, ChallengeListResponse } from './types'
 
 const PAGE_SIZE = 9
 
@@ -18,5 +18,13 @@ export function useChallenges() {
       const total = lastPage.data?.totalCount ?? 0
       return loaded < total ? allPages.length : undefined
     },
+  })
+}
+
+export function useChallengeById(id: string) {
+  return useQuery({
+    queryKey: ['challenge', id],
+    queryFn: () => apiClient.get<ChallengeInfoResponse>('/campaign/info', { Id: id }),
+    enabled: !!id,
   })
 }
