@@ -1,0 +1,67 @@
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: box-shadow 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 24px rgba(124, 58, 237, 0.12);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.name {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.points {
+  flex-shrink: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  background-color: rgba(124, 58, 237, 0.08);
+  padding: 0.2rem 0.8rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.description {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: auto;
+}
+
+.dates {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.events {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}

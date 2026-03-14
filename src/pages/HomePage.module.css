@@ -1,0 +1,92 @@
+.page {
+  padding-block: var(--space-6);
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.count {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background-color: var(--color-border);
+  padding: 0.2rem 0.8rem;
+  border-radius: var(--radius-full);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 576px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.skeleton {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 576px) {
+  .skeleton {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .skeleton {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.skeletonCard {
+  height: 16rem;
+  background: linear-gradient(90deg, var(--color-border) 25%, #f0eeff 50%, var(--color-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-lg);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.error {
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  text-align: center;
+  padding-block: var(--space-8);
+}
+
+.empty {
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  text-align: center;
+  padding-block: var(--space-8);
+}

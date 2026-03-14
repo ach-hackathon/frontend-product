@@ -1,6 +1,7 @@
 import { getToken } from './token'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL as string
+const APPLICATION_ID = import.meta.env.VITE_APPLICATION_ID as string
 
 function getHeaders(): HeadersInit {
   const token = getToken()
@@ -21,6 +22,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
 export const apiClient = {
   get: <T>(path: string, params?: Record<string, string>): Promise<T> => {
     const url = new URL(BASE_URL + path)
+    if (APPLICATION_ID) url.searchParams.set('ApplicationId', APPLICATION_ID)
     if (params) {
       Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v))
     }
@@ -31,14 +33,14 @@ export const apiClient = {
     fetch(BASE_URL + path, {
       method: 'POST',
       headers: getHeaders(),
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body !== undefined ? JSON.stringify({ applicationId: APPLICATION_ID, ...(body as object) }) : undefined,
     }).then(handleResponse<T>),
 
   put: <T>(path: string, body?: unknown): Promise<T> =>
     fetch(BASE_URL + path, {
       method: 'PUT',
       headers: getHeaders(),
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body !== undefined ? JSON.stringify({ applicationId: APPLICATION_ID, ...(body as object) }) : undefined,
     }).then(handleResponse<T>),
 
   delete: <T>(path: string): Promise<T> =>
