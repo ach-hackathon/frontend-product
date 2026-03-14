@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEventTaskById, EventTaskCompletionCondition, EventTaskType } from '@/entities/event'
+import { useCheckInEvent, QrScannerModal } from '@/features/check-in-event'
+import type { CheckInEventResult } from '@/features/check-in-event'
 import { useImageUrl } from '@/shared/api/image'
 import styles from './TaskPage.module.css'
 
@@ -14,10 +17,26 @@ function TaskHero({ fileId }: { fileId: string | null }) {
   )
 }
 
+function CheckInResult({ result }: { result: CheckInEventResult }) {
+  return (
+    <div className={styles.resultCard}>
+      <div className={styles.resultIcon}>{result.isEventCompleted ? '✅' : '⚡'}</div>
+      <div>
+        <p className={styles.resultTitle}>
+          {result.isEventCompleted ? 'Задание выполнено!' : 'Отмечено!'}
+        </p>
+        <p className={styles.resultPoints}>+{result.pointsEarned} XP</p>
+      </div>
+    </div>
+  )
+}
+
 export function TaskPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data, isLoading, isError } = useEventTaskById(id ?? '')
+  const { mutate: checkIn, isPending, data: checkInData, error: checkInError } = useCheckInEvent()
+  const [scannerOpen, setScannerOpen] = useState(false)
 
   if (isLoading) {
     return (
@@ -43,6 +62,12 @@ export function TaskPage() {
   const task = data.data.entity
   const achievements = task.achievements ?? []
   const gifts = task.gifts ?? []
+  const checkInResult = checkInData?.data?.entity
+
+  const handleQrScan = (qrCode: string) => {
+    setScannerOpen(false)
+    checkIn({ campaignEventId: task.id, qrCode })
+  }
 
   return (
     <div className={styles.page}>
@@ -79,14 +104,23 @@ export function TaskPage() {
           <p className={styles.description}>{task.description}</p>
         )}
 
-        {/* QR Code */}
-        {task.qrCode && (
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>QR-код</h2>
-            <div className={styles.qrWrapper}>
-              <img src={task.qrCode} alt="QR-код задания" className={styles.qrImage} />
-            </div>
-          </section>
+        {/* Check-in result */}
+        {checkInResult && <CheckInResult result={checkInResult} />}
+
+        {/* Check-in error */}
+        {checkInError && (
+          <p className={styles.checkInError}>Не удалось выполнить задание. Попробуйте ещё раз.</p>
+        )}
+
+        {/* QR scan action */}
+        {task.completionCondition === EventTaskCompletionCondition.ScanQrCode && (
+          <button
+            className={styles.scanButton}
+            onClick={() => setScannerOpen(true)}
+            disabled={isPending}
+          >
+            {isPending ? 'Проверяем...' : '📷 Сканировать QR-код'}
+          </button>
         )}
 
         {/* Location */}
@@ -135,6 +169,10 @@ export function TaskPage() {
           </section>
         )}
       </div>
+
+      {scannerOpen && (
+        <QrScannerModal onScan={handleQrScan} onClose={() => setScannerOpen(false)} />
+      )}
     </div>
   )
 }

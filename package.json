@@ -13,6 +13,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
     "clsx": "^2.1.1",
+    "html5-qrcode": "^2.3.8",
     "js-cookie": "^3.0.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
