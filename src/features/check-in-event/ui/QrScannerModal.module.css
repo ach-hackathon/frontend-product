@@ -33,6 +33,45 @@
   justify-content: center;
 }
 
+.scannerWrapper {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  /* высота подбирается под соотношение видео ~4:3 */
+  min-height: 24rem;
+}
+
+.skeleton {
+  width: 100%;
+  height: 100%;
+  min-height: 24rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #efefef 25%, #f9f9f9 50%, #efefef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skeleton::after {
+  content: '📷';
+  font-size: 4rem;
+  opacity: 0.3;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.5; }
+}
+
 .scanner {
   width: 100%;
   border-radius: var(--radius-lg);

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Html5Qrcode } from 'html5-qrcode'
 import { BottomSheet } from '@/shared/ui/BottomSheet'
 import styles from './QrScannerModal.module.css'
@@ -14,6 +14,7 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
   const scannerRef = useRef<Html5Qrcode | null>(null)
   const scannedRef = useRef(false)
   const onScanRef = useRef(onScan)
+  const [isReady, setIsReady] = useState(false)
   useLayoutEffect(() => {
     onScanRef.current = onScan
   })
@@ -35,6 +36,7 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
         },
         undefined,
       )
+      .then(() => setIsReady(true))
       .catch(console.error)
 
     return () => {
@@ -49,11 +51,16 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
       <div className={styles.content}>
         <div className={styles.header}>
           <h2 className={styles.title}>Сканируйте QR-код</h2>
-          <button className={styles.closeButton} onClick={onClose}>
-            ✕
-          </button>
+          <button className={styles.closeButton} onClick={onClose}>✕</button>
         </div>
-        <div id={SCANNER_ID} className={styles.scanner} />
+        <div className={styles.scannerWrapper}>
+          {!isReady && <div className={styles.skeleton} />}
+          <div
+            id={SCANNER_ID}
+            className={styles.scanner}
+            style={isReady ? undefined : { position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+          />
+        </div>
         <p className={styles.hint}>Наведите камеру на QR-код задания</p>
       </div>
     </BottomSheet>
