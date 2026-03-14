@@ -1,5 +1,7 @@
 import { apiClient } from '../lib/apiClient'
 
+export const APPLICATION_ID = 'b9ff5d1a-ef16-4ef3-a560-678145d3e487'
+
 export interface RequestCodeResponse {
   data: {
     entity: {
@@ -27,7 +29,7 @@ export interface VerifyCodeResponse {
 
 export const authApi = {
   requestCode: (email: string) =>
-    apiClient.post<RequestCodeResponse>('/auth/request-code', { email }),
+    apiClient.post<RequestCodeResponse>('/auth/request-code', { email, applicationId: APPLICATION_ID }),
 
   verifyCode: (data: VerifyCodeRequest) =>
     apiClient.post<VerifyCodeResponse>('/auth/verify-code', data),
