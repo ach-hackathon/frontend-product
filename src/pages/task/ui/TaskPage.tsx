@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEventTaskById } from '@/entities/event'
 import { useCheckInEvent, QrScannerModal } from '@/features/check-in-event'
 import type { CheckInEventResult } from '@/features/check-in-event'
@@ -35,8 +36,14 @@ function CheckInResult({ result }: { result: CheckInEventResult }) {
 export function TaskPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data, isLoading, isError } = useEventTaskById(id ?? '')
-  const { mutate: checkIn, isPending, data: checkInData, error: checkInError } = useCheckInEvent()
+  const { mutate: checkIn, isPending, data: checkInData, error: checkInError } = useCheckInEvent({
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['event-progress'] })
+      void queryClient.invalidateQueries({ queryKey: ['event-task', id] })
+    },
+  })
   const [scannerOpen, setScannerOpen] = useState(false)
 
   if (isLoading) {
