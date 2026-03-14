@@ -1,13 +1,3 @@
-export interface JwtPayload {
-  aud: string
-  exp: number
-  iss: string
-  scope: string
-  sub: string
-  unique_name: string
-  display_name?: string
-}
-
 export interface UserPoints {
   points: number
   experiencePoints: number
@@ -23,7 +13,6 @@ export interface UserApiModel {
   userPoints: UserPoints | null
 }
 
-/** Контекст пользователя — данные из /api/user/info */
 export type User = UserApiModel
 
 export interface UserInfoResponse {

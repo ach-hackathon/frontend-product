@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getToken } from '../lib/token'
 import { apiClient } from '../lib/apiClient'
 import type { User, UserInfoResponse } from './lib/user'
+import styles from './UserProvider.module.css'
 
 const UserContext = createContext<User | null>(null)
 
@@ -27,7 +28,11 @@ export function UserProvider() {
   }
 
   if (isLoading) {
-    return null
+    return (
+      <div className={styles.loader}>
+        <div className={styles.spinner} />
+      </div>
+    )
   }
 
   if (isError || !data?.data?.entity) {

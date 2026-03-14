@@ -19,6 +19,11 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return (text ? JSON.parse(text) : null) as T
 }
 
+function withAppId(body: unknown): string {
+  // body всегда объект из наших вызовов; applicationId из env имеет приоритет
+  return JSON.stringify({ ...(body as object), applicationId: APPLICATION_ID })
+}
+
 export const apiClient = {
   get: <T>(path: string, params?: Record<string, string>): Promise<T> => {
     const url = new URL(BASE_URL + path)
@@ -33,14 +38,14 @@ export const apiClient = {
     fetch(BASE_URL + path, {
       method: 'POST',
       headers: getHeaders(),
-      body: body !== undefined ? JSON.stringify({ applicationId: APPLICATION_ID, ...(body as object) }) : undefined,
+      body: body !== undefined ? withAppId(body) : undefined,
     }).then(handleResponse<T>),
 
   put: <T>(path: string, body?: unknown): Promise<T> =>
     fetch(BASE_URL + path, {
       method: 'PUT',
       headers: getHeaders(),
-      body: body !== undefined ? JSON.stringify({ applicationId: APPLICATION_ID, ...(body as object) }) : undefined,
+      body: body !== undefined ? withAppId(body) : undefined,
     }).then(handleResponse<T>),
 
   delete: <T>(path: string): Promise<T> =>
