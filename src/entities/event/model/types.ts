@@ -63,30 +63,20 @@ export interface EventProgressResponse {
   error: unknown
 }
 
-// ─── Task detail ──────────────────────────────────────────────────────────────
+// ─── Task detail (usercampaign/event-info) ────────────────────────────────────
 
-export interface EventTaskAchievementApiModel {
+export interface UserCampaignEventApiModel {
   id: string
   name: string | null
   description: string | null
+  pointsForCompletions: number
   fileId: string | null
-}
-
-export interface EventTaskGiftApiModel {
-  id: string
-  name: string | null
-  description: string | null
-  fileId: string | null
-}
-
-export interface EventTaskDetailApiModel extends EventTaskApiModel {
-  achievements: EventTaskAchievementApiModel[] | null
-  gifts: EventTaskGiftApiModel[] | null
+  isCompleted: boolean
 }
 
 export interface EventTaskInfoResponse {
   data: {
-    entity: EventTaskDetailApiModel
+    entity: UserCampaignEventApiModel
   }
   error: unknown
 }

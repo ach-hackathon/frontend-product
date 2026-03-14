@@ -45,7 +45,7 @@ export function useEventLeaderboard(campaignId: string) {
 export function useEventTaskById(id: string) {
   return useQuery({
     queryKey: ['event-task', id],
-    queryFn: () => apiClient.get<EventTaskInfoResponse>('/campaign/event-info', { Id: id }),
+    queryFn: () => apiClient.get<EventTaskInfoResponse>('/usercampaign/event-info', { CampaignEventId: id }),
     enabled: !!id,
   })
 }

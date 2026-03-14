@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useEventTaskById, EventTaskCompletionCondition, EventTaskType } from '@/entities/event'
+import { useEventTaskById } from '@/entities/event'
 import { useCheckInEvent, QrScannerModal } from '@/features/check-in-event'
 import type { CheckInEventResult } from '@/features/check-in-event'
 import { useImageUrl } from '@/shared/api/image'
@@ -61,13 +61,9 @@ export function TaskPage() {
   }
 
   const task = data.data.entity
-  const achievements = task.achievements ?? []
-  const gifts = task.gifts ?? []
   const checkInResult = checkInData?.data?.entity
-  // Single-задание скрываем кнопку после успешного выполнения;
-  // Multiple — можно сканировать снова
-  const isMultiple = task.type === EventTaskType.Multiple
-  const showScanButton = !checkInResult || isMultiple
+  const isAlreadyCompleted = task.isCompleted
+  const showScanButton = !isAlreadyCompleted && !checkInResult
 
   const handleQrScan = (scannedText: string) => {
     setScannerOpen(false)
@@ -98,18 +94,15 @@ export function TaskPage() {
       </div>
 
       <div className={`container ${styles.content}`}>
-        {/* Badges */}
-        <div className={styles.badgeRow}>
-          {task.completionCondition === EventTaskCompletionCondition.ScanQrCode && (
-            <span className={styles.conditionBadge}>📷 QR-код</span>
-          )}
-          {task.completionCondition === EventTaskCompletionCondition.VisitLocation && (
-            <span className={styles.conditionBadge}>📍 Локация</span>
-          )}
-          {task.type === EventTaskType.Multiple && (
-            <span className={styles.typeBadge}>🔁 Многократно</span>
-          )}
-        </div>
+        {/* Статус выполнения */}
+        {isAlreadyCompleted && !checkInResult && (
+          <div className={styles.resultCard}>
+            <div className={styles.resultIcon}>✅</div>
+            <div>
+              <p className={styles.resultTitle}>Задание уже выполнено!</p>
+            </div>
+          </div>
+        )}
 
         {/* Description */}
         {task.description && (
@@ -125,7 +118,7 @@ export function TaskPage() {
         )}
 
         {/* QR scan action */}
-        {task.completionCondition === EventTaskCompletionCondition.ScanQrCode && showScanButton && (
+        {showScanButton && (
           <button
             className={styles.scanButton}
             onClick={() => setScannerOpen(true)}
@@ -133,52 +126,6 @@ export function TaskPage() {
           >
             {isPending ? 'Проверяем...' : '📷 Сканировать QR-код'}
           </button>
-        )}
-
-        {/* Location */}
-        {task.latitude != null && task.longitude != null && (
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>📍 Местоположение</h2>
-            <p className={styles.locationText}>
-              {task.latitude.toFixed(6)}, {task.longitude.toFixed(6)}
-            </p>
-          </section>
-        )}
-
-        {/* Achievements */}
-        {achievements.length > 0 && (
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>🏆 Достижения</h2>
-            <div className={styles.rewardList}>
-              {achievements.map((a) => (
-                <div key={a.id} className={styles.rewardCard}>
-                  <span className={styles.rewardIcon}>🏅</span>
-                  <div>
-                    <p className={styles.rewardName}>{a.name ?? 'Достижение'}</p>
-                    {a.description && <p className={styles.rewardDesc}>{a.description}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Gifts */}
-        {gifts.length > 0 && (
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>🎁 Призы</h2>
-            <div className={styles.rewardList}>
-              {gifts.map((g) => (
-                <div key={g.id} className={styles.rewardCard}>
-                  <span className={styles.rewardIcon}>🎁</span>
-                  <div>
-                    <p className={styles.rewardName}>{g.name ?? 'Приз'}</p>
-                    {g.description && <p className={styles.rewardDesc}>{g.description}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
         )}
       </div>
 
