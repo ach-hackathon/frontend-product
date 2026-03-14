@@ -41,6 +41,7 @@ export function ProfilePage() {
   const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Аноним'
   const initials = [user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'
   const achievements = achievementsData?.data?.items ?? []
+  const roles = user.roles?.filter((r) => r.name) ?? []
 
   function handleLogout() {
     removeToken()
@@ -53,33 +54,57 @@ export function ProfilePage() {
         <div className={styles.avatar}>{initials}</div>
         <h1 className={styles.name}>{fullName}</h1>
         {user.email && <p className={styles.email}>{user.email}</p>}
+        {roles.length > 0 && (
+          <div className={styles.roles}>
+            {roles.map((r) => (
+              <span key={r.id} className={styles.roleBadge}>{r.name}</span>
+            ))}
+          </div>
+        )}
       </div>
 
-      {user.userPoints && (
-        <div className={styles.stats}>
-          <div className={styles.statCard}>
-            <span className={styles.statIcon}>🏆</span>
-            <span className={styles.statValue}>{user.userPoints.level}</span>
-            <span className={styles.statLabel}>Уровень</span>
-          </div>
-          <div className={styles.statCard}>
-            <span className={styles.statIcon}>⚡</span>
-            <span className={styles.statValue}>{user.userPoints.experiencePoints}</span>
-            <span className={styles.statLabel}>Опыт (XP)</span>
-          </div>
-          <div className={styles.statCard}>
-            <span className={styles.statIcon}>💎</span>
-            <span className={styles.statValue}>{user.userPoints.points}</span>
-            <span className={styles.statLabel}>Очки</span>
-          </div>
+      {/* Stats */}
+      <div className={styles.stats}>
+        <div className={styles.statCard}>
+          <span className={styles.statIcon}>💎</span>
+          <span className={styles.statValue}>{user.balance}</span>
+          <span className={styles.statLabel}>Баланс</span>
         </div>
-      )}
+        {user.userPoints && (
+          <>
+            <div className={styles.statCard}>
+              <span className={styles.statIcon}>🏆</span>
+              <span className={styles.statValue}>{user.userPoints.level}</span>
+              <span className={styles.statLabel}>Уровень</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statIcon}>⚡</span>
+              <span className={styles.statValue}>{user.userPoints.experiencePoints}</span>
+              <span className={styles.statLabel}>Опыт (XP)</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statIcon}>🎯</span>
+              <span className={styles.statValue}>{user.userPoints.points}</span>
+              <span className={styles.statLabel}>Очки</span>
+            </div>
+          </>
+        )}
+      </div>
 
+      {/* Info */}
       <div className={styles.info}>
-        <div className={styles.infoRow}>
-          <span className={styles.infoLabel}>В системе с</span>
-          <span className={styles.infoValue}>{formatDate(user.registrationDate)}</span>
-        </div>
+        {user.registrationDate && (
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>В системе с</span>
+            <span className={styles.infoValue}>{formatDate(user.registrationDate)}</span>
+          </div>
+        )}
+        {(user.applications?.length ?? 0) > 0 && (
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>Приложения</span>
+            <span className={styles.infoValue}>{user.applications!.map((a) => a.name).filter(Boolean).join(', ')}</span>
+          </div>
+        )}
       </div>
 
       {/* Achievements */}

@@ -4,16 +4,18 @@ export interface UserPoints {
   level: number
 }
 
-export interface UserApiModel {
+export interface ApplicationApiModel {
   id: string
-  firstName: string | null
-  lastName: string | null
-  registrationDate: string
-  email: string | null
-  userPoints: UserPoints | null
+  name: string | null
+  description: string | null
+  domain: string | null
+  fileId: string | null
 }
 
-export type User = UserApiModel
+export interface RoleApiModel {
+  id: string
+  name: string | null
+}
 
 export interface AchievementApiModel {
   id: string
@@ -27,6 +29,21 @@ export interface UserAchievementApiModel {
   achievement: AchievementApiModel
   receivedAtUtc: string
 }
+
+export interface UserApiModel {
+  id: string
+  firstName: string | null
+  lastName: string | null
+  email: string | null
+  balance: number
+  applications: ApplicationApiModel[] | null
+  roles: RoleApiModel[] | null
+  // поля, которые может вернуть расширенный API
+  registrationDate?: string
+  userPoints?: UserPoints | null
+}
+
+export type User = UserApiModel
 
 export interface UserAchievementsResponse {
   data: {
