@@ -8,7 +8,20 @@
   align-items: flex-end;
   background-color: var(--color-surface);
   border-top: 2px solid var(--color-border);
-  padding-bottom: env(safe-area-inset-bottom);
+  /*
+   * safe-area-inset-bottom автоматически адаптируется к браузерному UI:
+   * — на iPhone добавляет отступ под home-indicator
+   * — когда адресная строка прячется/показывается, браузер сам
+   *   пересчитывает значение и перерисовывает навбар
+   * Запасное значение 0px для браузеров без поддержки env()
+   */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /*
+   * Принудительный GPU-слой: предотвращает мигание nav
+   * во время анимации адресной строки в iOS Safari
+   */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* ─── Regular tab ────────────────────────────────────────────────────────── */
