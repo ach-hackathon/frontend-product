@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useEventById, EventTaskType, EventTaskCompletionCondition } from '@/entities/event'
 import type { EventTaskApiModel } from '@/entities/event'
 import { useImageUrl } from '@/shared/api/image'
@@ -28,7 +28,7 @@ function TaskStep({ task, index, isLast }: { task: EventTaskApiModel; index: num
         <div className={styles.stepNumber}>{index + 1}</div>
         {!isLast && <div className={styles.stepLine} />}
       </div>
-      <div className={styles.stepCard}>
+      <Link to={`/task/${task.id}`} className={styles.stepCard}>
         <div className={styles.stepHeader}>
           <h3 className={styles.stepName}>{task.name ?? 'Без названия'}</h3>
           <span className={styles.stepXp}>⚡ {task.pointsForCompletions} XP</span>
@@ -40,7 +40,7 @@ function TaskStep({ task, index, isLast }: { task: EventTaskApiModel; index: num
             <span className={styles.typeBadge}>{getTypeLabel(task.type)}</span>
           )}
         </div>
-      </div>
+      </Link>
     </div>
   )
 }

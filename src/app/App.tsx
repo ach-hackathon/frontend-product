@@ -5,6 +5,7 @@ import { Layout } from '@/widgets/layout'
 import { HomePage } from '@/pages/home'
 import { ProfilePage } from '@/pages/profile'
 import { EventPage } from '@/pages/event'
+import { TaskPage } from '@/pages/task'
 import { LoginPage } from '@/pages/login'
 import { ConfirmCodePage } from '@/pages/confirm-code'
 import { CodeSentPage } from '@/pages/code-sent'
@@ -27,6 +28,7 @@ export function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/event/:id" element={<EventPage />} />
+              <Route path="/task/:id" element={<TaskPage />} />
             </Route>
           </Route>
         </Route>

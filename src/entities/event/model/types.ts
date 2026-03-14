@@ -40,6 +40,32 @@ export interface EventInfoResponse {
   error: unknown
 }
 
+export interface EventTaskAchievementApiModel {
+  id: string
+  name: string | null
+  description: string | null
+  fileId: string | null
+}
+
+export interface EventTaskGiftApiModel {
+  id: string
+  name: string | null
+  description: string | null
+  fileId: string | null
+}
+
+export interface EventTaskDetailApiModel extends EventTaskApiModel {
+  achievements: EventTaskAchievementApiModel[] | null
+  gifts: EventTaskGiftApiModel[] | null
+}
+
+export interface EventTaskInfoResponse {
+  data: {
+    entity: EventTaskDetailApiModel
+  }
+  error: unknown
+}
+
 export const EventTaskType = {
   Single: 1,
   Multiple: 2,
