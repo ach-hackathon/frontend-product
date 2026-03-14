@@ -1,5 +1,5 @@
 export { EventCard } from './ui/EventCard'
 export { EventImage } from './ui/EventImage'
-export { useEvents, useEventById, useEventTaskById } from './model/queries'
+export { useEvents, useEventProgress, useEventTaskById } from './model/queries'
 export { EventTaskType, EventTaskCompletionCondition } from './model/types'
-export type { EventApiModel, EventTaskApiModel, EventTaskDetailApiModel } from './model/types'
+export type { EventApiModel, EventProgressApiModel, EventProgressTaskApiModel, EventTaskApiModel, EventTaskDetailApiModel } from './model/types'

@@ -33,12 +33,37 @@ export interface EventListResponse {
   error: unknown
 }
 
-export interface EventInfoResponse {
+// ─── Progress ─────────────────────────────────────────────────────────────────
+
+export interface EventProgressCampaignApiModel {
+  id: string
+  name: string | null
+  description: string | null
+  startDate: string
+  endDate: string | null
+  pointsForCompletions: number
+  fileId: string | null
+  applicationId: string
+}
+
+export interface EventProgressTaskApiModel extends EventTaskApiModel {
+  isCompleted: boolean
+}
+
+export interface EventProgressApiModel {
+  campaign: EventProgressCampaignApiModel
+  progressPercent: number
+  events: EventProgressTaskApiModel[] | null
+}
+
+export interface EventProgressResponse {
   data: {
-    entity: EventApiModel
+    entity: EventProgressApiModel
   }
   error: unknown
 }
+
+// ─── Task detail ──────────────────────────────────────────────────────────────
 
 export interface EventTaskAchievementApiModel {
   id: string
@@ -65,6 +90,8 @@ export interface EventTaskInfoResponse {
   }
   error: unknown
 }
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
 
 export const EventTaskType = {
   Single: 1,

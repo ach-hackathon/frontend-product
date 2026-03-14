@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { apiClient } from '@/shared/api/client'
-import type { EventInfoResponse, EventListResponse, EventTaskInfoResponse } from './types'
+import type { EventListResponse, EventProgressResponse, EventTaskInfoResponse } from './types'
 
 const PAGE_SIZE = 9
 
@@ -21,11 +21,15 @@ export function useEvents() {
   })
 }
 
-export function useEventById(id: string) {
+export function useEventProgress(campaignId: string, userId: string) {
   return useQuery({
-    queryKey: ['event', id],
-    queryFn: () => apiClient.get<EventInfoResponse>('/campaign/info', { Id: id }),
-    enabled: !!id,
+    queryKey: ['event-progress', campaignId, userId],
+    queryFn: () =>
+      apiClient.get<EventProgressResponse>('/usercampaign/campaign-progress', {
+        CampaignId: campaignId,
+        UserId: userId,
+      }),
+    enabled: !!campaignId && !!userId,
   })
 }
 

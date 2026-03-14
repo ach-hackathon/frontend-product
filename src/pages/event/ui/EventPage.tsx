@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { useEventById, EventTaskType, EventTaskCompletionCondition } from '@/entities/event'
-import type { EventTaskApiModel } from '@/entities/event'
+import { useEventProgress, EventTaskCompletionCondition, EventTaskType } from '@/entities/event'
+import type { EventProgressTaskApiModel } from '@/entities/event'
+import { useUser } from '@/entities/user'
 import { useImageUrl } from '@/shared/api/image'
 import styles from './EventPage.module.css'
 
@@ -10,44 +11,8 @@ function formatDate(iso: string): string {
   )
 }
 
-function getConditionLabel(condition: number): string {
-  if (condition === EventTaskCompletionCondition.ScanQrCode) return '📷 QR-код'
-  if (condition === EventTaskCompletionCondition.VisitLocation) return '📍 Локация'
-  return '❓'
-}
-
-function getTypeLabel(type: number): string {
-  if (type === EventTaskType.Multiple) return '🔁 Многократно'
-  return ''
-}
-
-function TaskStep({ task, index, isLast }: { task: EventTaskApiModel; index: number; isLast: boolean }) {
-  return (
-    <div className={styles.step}>
-      <div className={styles.stepTrack}>
-        <div className={styles.stepNumber}>{index + 1}</div>
-        {!isLast && <div className={styles.stepLine} />}
-      </div>
-      <Link to={`/task/${task.id}`} className={styles.stepCard}>
-        <div className={styles.stepHeader}>
-          <h3 className={styles.stepName}>{task.name ?? 'Без названия'}</h3>
-          <span className={styles.stepXp}>⚡ {task.pointsForCompletions} XP</span>
-        </div>
-        {task.description && <p className={styles.stepDescription}>{task.description}</p>}
-        <div className={styles.stepBadges}>
-          <span className={styles.conditionBadge}>{getConditionLabel(task.completionCondition)}</span>
-          {getTypeLabel(task.type) && (
-            <span className={styles.typeBadge}>{getTypeLabel(task.type)}</span>
-          )}
-        </div>
-      </Link>
-    </div>
-  )
-}
-
 function EventHero({ fileId }: { fileId: string | null }) {
   const { data: imageUrl } = useImageUrl(fileId)
-
   return (
     <div
       className={styles.hero}
@@ -56,10 +21,34 @@ function EventHero({ fileId }: { fileId: string | null }) {
   )
 }
 
+function TaskRow({ task }: { task: EventProgressTaskApiModel }) {
+  const conditionIcon =
+    task.completionCondition === EventTaskCompletionCondition.ScanQrCode ? '📷' : '📍'
+  const isMultiple = task.type === EventTaskType.Multiple
+
+  return (
+    <Link to={`/task/${task.id}`} className={`${styles.taskRow} ${task.isCompleted ? styles.taskRowCompleted : ''}`}>
+      <div className={`${styles.taskStatus} ${task.isCompleted ? styles.taskStatusDone : ''}`}>
+        {task.isCompleted ? '✓' : ''}
+      </div>
+      <div className={styles.taskInfo}>
+        <span className={styles.taskName}>{task.name ?? 'Без названия'}</span>
+        <div className={styles.taskMeta}>
+          <span className={styles.taskBadge}>{conditionIcon}</span>
+          {isMultiple && <span className={styles.taskBadge}>🔁</span>}
+          <span className={styles.taskXp}>⚡ {task.pointsForCompletions} XP</span>
+        </div>
+      </div>
+      <span className={styles.taskArrow}>›</span>
+    </Link>
+  )
+}
+
 export function EventPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { data, isLoading, isError } = useEventById(id ?? '')
+  const user = useUser()
+  const { data, isLoading, isError } = useEventProgress(id ?? '', user.id)
 
   if (isLoading) {
     return (
@@ -67,10 +56,10 @@ export function EventPage() {
         <div className={styles.skeletonHero} />
         <div className={`container ${styles.content}`}>
           <div className={styles.skeletonTitle} />
-          <div className={styles.skeletonMeta} />
-          <div className={styles.skeletonSteps}>
+          <div className={styles.skeletonProgress} />
+          <div className={styles.skeletonTasks}>
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className={styles.skeletonStep} />
+              <div key={i} className={styles.skeletonTask} />
             ))}
           </div>
         </div>
@@ -86,53 +75,63 @@ export function EventPage() {
     )
   }
 
-  const event = data.data.entity
-  const tasks = event.events ?? []
+  const { campaign, progressPercent, events } = data.data.entity
+  const tasks = events ?? []
+  const pct = Math.round(progressPercent)
+  const completedCount = tasks.filter((t) => t.isCompleted).length
 
   return (
     <div className={styles.page}>
-      {/* Full-bleed hero */}
+      {/* Hero */}
       <div className={styles.heroWrapper}>
-        <EventHero fileId={event.fileId} />
+        <EventHero fileId={campaign.fileId} />
         <div className={styles.heroOverlay} />
-
-        <button className={styles.backButton} onClick={() => navigate(-1)}>
-          ←
-        </button>
-
+        <button className={styles.backButton} onClick={() => navigate(-1)}>←</button>
         <div className={`container ${styles.heroContent}`}>
-          <span className={styles.xpBadge}>⚡ {event.pointsForCompletions} XP</span>
-          <h1 className={styles.title}>{event.name ?? 'Без названия'}</h1>
+          <span className={styles.xpBadge}>⚡ {campaign.pointsForCompletions} XP</span>
+          <h1 className={styles.title}>{campaign.name ?? 'Без названия'}</h1>
         </div>
       </div>
 
-      {/* Page content */}
       <div className={`container ${styles.content}`}>
-        {/* Meta bar */}
+        {/* Meta */}
         <div className={styles.metaBar}>
           <span className={styles.metaChip}>
-            📅 {formatDate(event.startDate)}
-            {event.endDate ? ` — ${formatDate(event.endDate)}` : ''}
+            📅 {formatDate(campaign.startDate)}
+            {campaign.endDate ? ` — ${formatDate(campaign.endDate)}` : ''}
           </span>
           {tasks.length > 0 && (
             <span className={styles.metaChip}>
-              🎯 {tasks.length} {tasks.length === 1 ? 'задание' : tasks.length < 5 ? 'задания' : 'заданий'}
+              🎯 {completedCount} / {tasks.length}
             </span>
           )}
         </div>
 
         {/* Description */}
-        {event.description && (
-          <p className={styles.description}>{event.description}</p>
+        {campaign.description && (
+          <p className={styles.description}>{campaign.description}</p>
+        )}
+
+        {/* Progress */}
+        {tasks.length > 0 && (
+          <div className={styles.progressCard}>
+            <div className={styles.progressHeader}>
+              <span className={styles.progressLabel}>Прогресс</span>
+              <span className={styles.progressPct}>{pct}%</span>
+            </div>
+            <div className={styles.progressBar}>
+              <div className={styles.progressFill} style={{ width: `${pct}%` }} />
+            </div>
+          </div>
         )}
 
         {/* Tasks */}
         {tasks.length > 0 && (
-          <section className={styles.eventsSection}>
-            <h2 className={styles.eventsTitle}>Задания</h2>
-            <div className={styles.stepsList}>
-              {tasks.map((task, i) => (
-                <TaskStep key={task.id} task={task} index={i} isLast={i === tasks.length - 1} />
+          <section className={styles.tasksSection}>
+            <h2 className={styles.tasksTitle}>Задания</h2>
+            <div className={styles.tasksList}>
+              {tasks.map((task) => (
+                <TaskRow key={task.id} task={task} />
               ))}
             </div>
           </section>
