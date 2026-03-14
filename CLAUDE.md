@@ -117,6 +117,48 @@ src/
 - При добавлении query — добавлять ключ в `eventKeys`, не создавать inline строки
 - `useEffect` для загрузки данных — заменять на TanStack Query
 
+## Design System — Duolingo
+
+Используем дизайн-систему в стиле **Duolingo**. Все новые компоненты и страницы должны следовать этим принципам.
+
+### Шрифт
+- **Nunito** (подключён через Google Fonts в `index.html`) — веса 400, 600, 700, 800, 900
+- Заголовки: `font-weight: 900`, текст: `font-weight: 700`, мuted: `font-weight: 600`
+
+### Цветовые токены (из `index.css`)
+- `--color-primary` `#58CC02` — зелёный (основной)
+- `--color-primary-shadow` `#58A700` — тёмно-зелёный (border-bottom / тень)
+- `--color-xp` `#FFD900` — жёлтый (XP/очки)
+- `--color-blue` `#1CB0F6` — синий (инфо-бейджи)
+- `--color-red` `#FF4B4B` — красный (ошибки)
+- `--color-bg` `#f7f7f7` — фон страницы
+- `--color-surface` `#ffffff` — фон карточек/панелей
+- `--color-text` `#3c3c3c` — основной текст
+
+### 3D-эффект (кнопки и карточки)
+Ключевая деталь Duolingo — элементы выглядят объёмными и "нажимаемыми":
+```css
+border: 2px solid <color-shadow>;
+border-bottom: 4px solid <color-shadow>;
+
+/* При нажатии: */
+transform: translateY(2px);
+border-bottom-width: 2px;
+```
+Применять для: кнопок, карточек, инпутов.
+
+### Бейджи
+Все метки/теги — pill-форма (`border-radius: var(--radius-full)`), bold текст, цветной фон с более тёмной рамкой.
+
+### Скругления
+Предпочитать `--radius-xl` (24px) для карточек/панелей, `--radius-full` для кнопок и бейджей.
+
+### Правила
+- ❌ Не использовать фиолетовый (`#7c3aed`) — он был заменён на зелёный Duolingo
+- ❌ Не использовать `box-shadow` для объёма — только `border-bottom` с увеличенной толщиной
+- ✅ Uppercase + `letter-spacing` для кнопок
+- ✅ Эмодзи как иконки в бейджах (⚡ XP, 📅 дата, 🎯 задания)
+
 ## Rules — НЕ делать
 
 - ❌ Нарушать порядок импортов FSD

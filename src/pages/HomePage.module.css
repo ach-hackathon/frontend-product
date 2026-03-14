@@ -6,23 +6,26 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-6);
 }
 
 .title {
   font-size: var(--text-2xl);
-  font-weight: 700;
+  font-weight: 900;
   color: var(--color-text);
 }
 
 .count {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 800;
   color: var(--color-text-muted);
-  background-color: var(--color-border);
-  padding: 0.2rem 0.8rem;
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  padding: 0.2rem 1rem;
   border-radius: var(--radius-full);
 }
+
+/* ─── Grid ───────────────────────────────────────────────────────────────── */
 
 .grid {
   display: grid;
@@ -41,6 +44,8 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* ─── Skeleton ───────────────────────────────────────────────────────────── */
 
 .skeleton {
   display: grid;
@@ -61,11 +66,12 @@
 }
 
 .skeletonCard {
-  height: 16rem;
-  background: linear-gradient(90deg, var(--color-border) 25%, #f0eeff 50%, var(--color-border) 75%);
+  height: 17rem;
+  background: linear-gradient(90deg, #efefef 25%, #f9f9f9 50%, #efefef 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--color-border);
 }
 
 @keyframes shimmer {
@@ -77,16 +83,13 @@
   }
 }
 
-.error {
-  color: var(--color-text-muted);
-  font-size: var(--text-base);
-  text-align: center;
-  padding-block: var(--space-8);
-}
+/* ─── States ─────────────────────────────────────────────────────────────── */
 
+.error,
 .empty {
   color: var(--color-text-muted);
   font-size: var(--text-base);
+  font-weight: 700;
   text-align: center;
   padding-block: var(--space-8);
 }

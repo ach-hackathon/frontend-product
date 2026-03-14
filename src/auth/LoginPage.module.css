@@ -18,8 +18,8 @@
 }
 
 .title {
-  font-size: var(--text-xl);
-  font-weight: 700;
+  font-size: var(--text-2xl);
+  font-weight: 900;
   color: var(--color-text);
   margin-bottom: var(--space-5);
   text-align: center;
@@ -34,41 +34,45 @@
 
 .label {
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 800;
   color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
+  border-bottom: 4px solid var(--color-border-shadow);
   border-radius: var(--radius-md);
   font-size: var(--text-base);
+  font-weight: 700;
   color: var(--color-text);
   background-color: var(--color-surface);
   outline: none;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+  transition: border-color 0.15s;
 }
 
 .input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+  border-color: var(--color-blue);
+  border-bottom-color: var(--color-blue-shadow);
 }
 
 .inputError {
-  border-color: #dc2626;
+  border-color: var(--color-red);
+  border-bottom-color: var(--color-red-shadow);
 }
 
 .inputError:focus {
-  border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+  border-color: var(--color-red);
+  border-bottom-color: var(--color-red-shadow);
 }
 
 .errorMessage {
   font-size: var(--text-sm);
-  color: #dc2626;
+  font-weight: 700;
+  color: var(--color-red);
 }
 
 .button {
@@ -77,26 +81,32 @@
   margin-top: var(--space-2);
   background-color: var(--color-primary);
   color: var(--color-primary-text);
-  border: none;
-  border-radius: var(--radius-md);
+  border: 2px solid var(--color-primary-shadow);
+  border-bottom: 4px solid var(--color-primary-shadow);
+  border-radius: var(--radius-full);
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
-  transition:
-    background-color 0.2s,
-    opacity 0.2s;
+  transition: transform 0.1s ease, border-bottom-width 0.1s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .button:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
 }
 
+.button:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
 .button:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 

@@ -6,9 +6,7 @@ interface ChallengeCardProps {
 }
 
 function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }).format(
-    new Date(iso),
-  )
+  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short' }).format(new Date(iso))
 }
 
 export function ChallengeCard({ challenge }: ChallengeCardProps) {
@@ -18,19 +16,19 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
     <div className={styles.card}>
       <div className={styles.header}>
         <h2 className={styles.name}>{challenge.name ?? 'Без названия'}</h2>
-        <span className={styles.points}>{challenge.pointsForCompletions} pts</span>
+        <span className={styles.xpBadge}>⚡ {challenge.pointsForCompletions} XP</span>
       </div>
 
       {challenge.description && <p className={styles.description}>{challenge.description}</p>}
 
       <div className={styles.footer}>
-        <span className={styles.dates}>
-          {formatDate(challenge.startDate)}
+        <span className={styles.dateBadge}>
+          📅 {formatDate(challenge.startDate)}
           {challenge.endDate ? ` — ${formatDate(challenge.endDate)}` : ''}
         </span>
         {eventsCount > 0 && (
-          <span className={styles.events}>
-            {eventsCount} {eventsCount === 1 ? 'событие' : eventsCount < 5 ? 'события' : 'событий'}
+          <span className={styles.eventsBadge}>
+            🎯 {eventsCount} {eventsCount === 1 ? 'задание' : eventsCount < 5 ? 'задания' : 'заданий'}
           </span>
         )}
       </div>

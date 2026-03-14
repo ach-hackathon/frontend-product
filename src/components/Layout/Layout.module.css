@@ -11,21 +11,21 @@
   top: 0;
   z-index: 100;
   background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
 }
 
 .headerInner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 5.6rem;
+  height: 6rem;
 }
 
 .logo {
   font-size: var(--text-xl);
-  font-weight: 700;
+  font-weight: 900;
   color: var(--color-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 /* ─── Profile ────────────────────────────────────────────────────────────── */
@@ -38,6 +38,7 @@
 
 .profileName {
   font-size: var(--text-sm);
+  font-weight: 700;
   color: var(--color-text-muted);
   max-width: 16rem;
   overflow: hidden;
@@ -49,13 +50,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.6rem;
-  height: 3.6rem;
+  width: 3.8rem;
+  height: 3.8rem;
   border-radius: var(--radius-full);
   background-color: var(--color-primary);
+  border: 3px solid var(--color-primary-shadow);
   color: var(--color-primary-text);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 800;
   flex-shrink: 0;
 }
 

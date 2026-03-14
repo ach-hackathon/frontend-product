@@ -18,18 +18,19 @@
 
 .title {
   font-size: var(--text-xl);
-  font-weight: 700;
+  font-weight: 900;
   color: var(--color-text);
 }
 
 .message {
   font-size: var(--text-base);
+  font-weight: 600;
   color: var(--color-text-muted);
 }
 
 .email {
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: 800;
   color: var(--color-primary);
 }
 
