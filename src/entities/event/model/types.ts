@@ -91,6 +91,23 @@ export interface EventTaskInfoResponse {
   error: unknown
 }
 
+// ─── Leaderboard ──────────────────────────────────────────────────────────────
+
+export interface EventLeaderboardEntryApiModel {
+  id: string
+  firstName: string | null
+  lastName: string | null
+  points: number
+}
+
+export interface EventLeaderboardResponse {
+  data: {
+    totalCount: number
+    items: EventLeaderboardEntryApiModel[] | null
+  }
+  error: unknown
+}
+
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
 export const EventTaskType = {

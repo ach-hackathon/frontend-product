@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { apiClient } from '@/shared/api/client'
-import type { EventListResponse, EventProgressResponse, EventTaskInfoResponse } from './types'
+import type { EventLeaderboardResponse, EventListResponse, EventProgressResponse, EventTaskInfoResponse } from './types'
 
 const PAGE_SIZE = 9
 
@@ -30,6 +30,15 @@ export function useEventProgress(campaignId: string, userId: string) {
         UserId: userId,
       }),
     enabled: !!campaignId && !!userId,
+  })
+}
+
+export function useEventLeaderboard(campaignId: string) {
+  return useQuery({
+    queryKey: ['event-leaderboard', campaignId],
+    queryFn: () =>
+      apiClient.get<EventLeaderboardResponse>('/campaign/users-points', { CampaignId: campaignId }),
+    enabled: !!campaignId,
   })
 }
 

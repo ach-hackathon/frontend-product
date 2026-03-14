@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { useEventProgress, EventTaskCompletionCondition, EventTaskType } from '@/entities/event'
-import type { EventProgressTaskApiModel } from '@/entities/event'
+import { useEventProgress, useEventLeaderboard, EventTaskCompletionCondition, EventTaskType } from '@/entities/event'
+import type { EventProgressTaskApiModel, EventLeaderboardEntryApiModel } from '@/entities/event'
 import { useUser } from '@/entities/user'
 import { useImageUrl } from '@/shared/api/image'
 import styles from './EventPage.module.css'
@@ -44,11 +44,35 @@ function TaskRow({ task }: { task: EventProgressTaskApiModel }) {
   )
 }
 
+const RANK_MEDALS: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' }
+
+function LeaderboardRow({
+  entry,
+  rank,
+  isCurrentUser,
+}: {
+  entry: EventLeaderboardEntryApiModel
+  rank: number
+  isCurrentUser: boolean
+}) {
+  const name = [entry.firstName, entry.lastName].filter(Boolean).join(' ') || 'Участник'
+  const medal = RANK_MEDALS[rank]
+
+  return (
+    <div className={`${styles.lbRow} ${isCurrentUser ? styles.lbRowCurrent : ''}`}>
+      <span className={styles.lbRank}>{medal ?? rank}</span>
+      <span className={styles.lbName}>{name}{isCurrentUser && ' (вы)'}</span>
+      <span className={styles.lbPoints}>⚡ {entry.points}</span>
+    </div>
+  )
+}
+
 export function EventPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const user = useUser()
   const { data, isLoading, isError } = useEventProgress(id ?? '', user.id)
+  const { data: lbData, isLoading: lbLoading } = useEventLeaderboard(id ?? '')
 
   if (isLoading) {
     return (
@@ -79,6 +103,7 @@ export function EventPage() {
   const tasks = events ?? []
   const pct = Math.round(progressPercent)
   const completedCount = tasks.filter((t) => t.isCompleted).length
+  const leaderboard = lbData?.data?.items ?? []
 
   return (
     <div className={styles.page}>
@@ -128,7 +153,7 @@ export function EventPage() {
         {/* Tasks */}
         {tasks.length > 0 && (
           <section className={styles.tasksSection}>
-            <h2 className={styles.tasksTitle}>Задания</h2>
+            <h2 className={styles.sectionTitle}>Задания</h2>
             <div className={styles.tasksList}>
               {tasks.map((task) => (
                 <TaskRow key={task.id} task={task} />
@@ -136,6 +161,31 @@ export function EventPage() {
             </div>
           </section>
         )}
+
+        {/* Leaderboard */}
+        <section className={styles.tasksSection}>
+          <h2 className={styles.sectionTitle}>🏆 Лидерборд</h2>
+          {lbLoading ? (
+            <div className={styles.lbSkeleton}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className={styles.lbSkeletonRow} />
+              ))}
+            </div>
+          ) : leaderboard.length === 0 ? (
+            <p className={styles.lbEmpty}>Пока никто не набрал очки</p>
+          ) : (
+            <div className={styles.lbList}>
+              {leaderboard.map((entry, i) => (
+                <LeaderboardRow
+                  key={entry.id}
+                  entry={entry}
+                  rank={i + 1}
+                  isCurrentUser={entry.id === user.id}
+                />
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   )
