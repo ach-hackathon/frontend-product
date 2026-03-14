@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { apiClient } from './apiClient'
 
 export interface ChallengeEventApiModel {
@@ -36,19 +36,21 @@ interface ChallengeListResponse {
   error: unknown
 }
 
-interface ChallengeListParams {
-  limit?: number
-  offset?: number
-}
+const PAGE_SIZE = 9
 
-export function useChallenges(params?: ChallengeListParams) {
-  return useQuery({
-    queryKey: ['challenges', params],
-    queryFn: () => {
-      const queryParams: Record<string, string> = {}
-      if (params?.limit != null) queryParams['Limit'] = String(params.limit)
-      if (params?.offset != null) queryParams['Offset'] = String(params.offset)
-      return apiClient.get<ChallengeListResponse>('/campaign/list', queryParams)
+export function useChallenges() {
+  return useInfiniteQuery({
+    queryKey: ['challenges'],
+    queryFn: ({ pageParam }) =>
+      apiClient.get<ChallengeListResponse>('/campaign/list', {
+        Limit: String(PAGE_SIZE),
+        Offset: String(pageParam * PAGE_SIZE),
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.flatMap((p) => p.data?.items ?? []).length
+      const total = lastPage.data?.totalCount ?? 0
+      return loaded < total ? allPages.length : undefined
     },
   })
 }

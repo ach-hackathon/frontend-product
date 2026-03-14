@@ -83,6 +83,13 @@
   }
 }
 
+/* ─── Sentinel (infinite scroll trigger) ────────────────────────────────── */
+
+.sentinel {
+  height: 1px;
+  margin-top: var(--space-4);
+}
+
 /* ─── States ─────────────────────────────────────────────────────────────── */
 
 .error,

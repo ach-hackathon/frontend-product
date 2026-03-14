@@ -2,17 +2,11 @@ import { Outlet } from 'react-router-dom'
 import { useUser } from '../../auth'
 import styles from './Layout.module.css'
 
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('')
-}
-
 export function Layout() {
   const user = useUser()
-  const initials = getInitials(user.displayName)
+
+  const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email || 'Аноним'
+  const initials = [user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'
 
   return (
     <div className={styles.layout}>
@@ -21,8 +15,8 @@ export function Layout() {
           <span className={styles.logo}>Eventigo</span>
 
           <div className={styles.profile}>
-            <span className={styles.profileName}>{user.displayName}</span>
-            <div className={styles.avatar} aria-label={user.displayName}>
+            <span className={styles.profileName}>{fullName}</span>
+            <div className={styles.avatar} aria-label={fullName}>
               {initials}
             </div>
           </div>

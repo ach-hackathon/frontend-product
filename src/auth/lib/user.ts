@@ -8,18 +8,27 @@ export interface JwtPayload {
   display_name?: string
 }
 
-export interface User {
-  sub: string
-  email: string
-  scope: string
-  displayName: string
+export interface UserPoints {
+  points: number
+  experiencePoints: number
+  level: number
 }
 
-export function jwtPayloadToUser(payload: JwtPayload): User {
-  return {
-    sub: payload.sub,
-    email: payload.unique_name,
-    scope: payload.scope,
-    displayName: payload.display_name ?? 'Anonymous',
+export interface UserApiModel {
+  id: string
+  firstName: string | null
+  lastName: string | null
+  registrationDate: string
+  email: string | null
+  userPoints: UserPoints | null
+}
+
+/** Контекст пользователя — данные из /api/user/info */
+export type User = UserApiModel
+
+export interface UserInfoResponse {
+  data: {
+    entity: UserApiModel
   }
+  error: unknown
 }

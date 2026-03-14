@@ -1,8 +1,9 @@
 import { createContext, useContext } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { getToken } from '../lib/token'
-import { parseJwt } from './lib/parseJwt'
-import { jwtPayloadToUser, type JwtPayload, type User } from './lib/user'
+import { apiClient } from '../lib/apiClient'
+import type { User, UserInfoResponse } from './lib/user'
 
 const UserContext = createContext<User | null>(null)
 
@@ -15,20 +16,26 @@ export function useUser(): User {
 export function UserProvider() {
   const token = getToken()
 
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['user/info'],
+    queryFn: () => apiClient.get<UserInfoResponse>('/user/info'),
+    enabled: !!token,
+  })
+
   if (!token) {
     return <Navigate to="/error" replace />
   }
 
-  let user: User
-  try {
-    const payload = parseJwt<JwtPayload>(token)
-    user = jwtPayloadToUser(payload)
-  } catch {
+  if (isLoading) {
+    return null
+  }
+
+  if (isError || !data?.data?.entity) {
     return <Navigate to="/error" replace />
   }
 
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={data.data.entity}>
       <Outlet />
     </UserContext.Provider>
   )
