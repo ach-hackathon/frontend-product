@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { useUser } from '@/entities/user'
+import { useUser, useUserAchievements } from '@/entities/user'
+import type { UserAchievementApiModel } from '@/entities/user'
+import { useImageUrl } from '@/shared/api/image'
 import { removeToken } from '@/shared/lib/token'
 import styles from './ProfilePage.module.css'
 
@@ -9,12 +11,34 @@ function formatDate(iso: string): string {
   )
 }
 
+function AchievementCard({ item }: { item: UserAchievementApiModel }) {
+  const { data: imageUrl } = useImageUrl(item.achievement.fileId)
+
+  return (
+    <div className={styles.achievementCard}>
+      <div className={styles.achievementIcon}>
+        {imageUrl
+          ? <img src={imageUrl} alt={item.achievement.name ?? ''} className={styles.achievementImg} />
+          : <span>🏅</span>
+        }
+      </div>
+      <p className={styles.achievementName}>{item.achievement.name ?? 'Достижение'}</p>
+      {item.achievement.description && (
+        <p className={styles.achievementDesc}>{item.achievement.description}</p>
+      )}
+      <p className={styles.achievementDate}>{formatDate(item.receivedAtUtc)}</p>
+    </div>
+  )
+}
+
 export function ProfilePage() {
   const user = useUser()
   const navigate = useNavigate()
+  const { data: achievementsData, isLoading: achievementsLoading } = useUserAchievements(user.id)
 
   const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Аноним'
   const initials = [user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'
+  const achievements = achievementsData?.data?.items ?? []
 
   function handleLogout() {
     removeToken()
@@ -55,6 +79,26 @@ export function ProfilePage() {
           <span className={styles.infoValue}>{formatDate(user.registrationDate)}</span>
         </div>
       </div>
+
+      {/* Achievements */}
+      <section className={styles.achievementsSection}>
+        <h2 className={styles.achievementsTitle}>🏆 Достижения</h2>
+        {achievementsLoading ? (
+          <div className={styles.achievementsGrid}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className={styles.achievementSkeleton} />
+            ))}
+          </div>
+        ) : achievements.length === 0 ? (
+          <p className={styles.achievementsEmpty}>Достижений пока нет. Выполняйте задания!</p>
+        ) : (
+          <div className={styles.achievementsGrid}>
+            {achievements.map((item) => (
+              <AchievementCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
+      </section>
 
       <button className={styles.logoutButton} onClick={handleLogout}>
         Выйти

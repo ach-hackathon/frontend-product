@@ -15,6 +15,27 @@ export interface UserApiModel {
 
 export type User = UserApiModel
 
+export interface AchievementApiModel {
+  id: string
+  name: string | null
+  description: string | null
+  fileId: string | null
+}
+
+export interface UserAchievementApiModel {
+  id: string
+  achievement: AchievementApiModel
+  receivedAtUtc: string
+}
+
+export interface UserAchievementsResponse {
+  data: {
+    totalCount: number
+    items: UserAchievementApiModel[] | null
+  }
+  error: unknown
+}
+
 export interface UserInfoResponse {
   data: {
     entity: UserApiModel

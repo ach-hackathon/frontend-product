@@ -1,10 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import { apiClient } from '@/shared/api/client'
-import type { UserInfoResponse } from './types'
+import type { UserAchievementsResponse, UserInfoResponse } from './types'
 
 export function useCurrentUser() {
   return useQuery({
     queryKey: ['user/info'],
     queryFn: () => apiClient.get<UserInfoResponse>('/user/info'),
+  })
+}
+
+export function useUserAchievements(userId: string) {
+  return useQuery({
+    queryKey: ['user/achievements', userId],
+    queryFn: () => apiClient.get<UserAchievementsResponse>('/userachievement/achievements', { Id: userId }),
+    enabled: !!userId,
   })
 }
