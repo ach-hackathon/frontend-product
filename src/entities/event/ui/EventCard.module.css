@@ -1,15 +1,18 @@
+/* ─── Card view ──────────────────────────────────────────────────────────── */
+
 .card {
   background-color: var(--color-surface);
   border: 2px solid var(--color-border);
   border-bottom: 4px solid var(--color-border-shadow);
   border-radius: var(--radius-xl);
-  padding: var(--space-5);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  overflow: hidden;
   cursor: pointer;
-  transition: transform 0.1s ease, border-bottom-width 0.1s ease;
+  transition: transform 0.1s ease, border-bottom-width 0.1s ease, border-color 0.15s;
   user-select: none;
+  text-decoration: none;
+  color: inherit;
 }
 
 .card:hover {
@@ -22,37 +25,56 @@
   border-bottom-width: 2px;
 }
 
-.header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.name {
-  font-size: var(--text-lg);
-  font-weight: 800;
-  color: var(--color-text);
-  line-height: 1.3;
-}
-
-.xpBadge {
+.cardImage {
+  position: relative;
+  width: 100%;
+  height: 14rem;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cardImgPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #58cc02 0%, #1cb0f6 100%);
+}
+
+.cardXp {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
   font-size: var(--text-sm);
   font-weight: 800;
   color: var(--color-xp-text);
   background-color: var(--color-xp);
   border: 2px solid var(--color-xp-shadow);
-  padding: 0.3rem 1rem;
+  padding: 0.25rem 0.8rem;
   border-radius: var(--radius-full);
   white-space: nowrap;
 }
 
-.description {
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-4);
+}
+
+.cardName {
   font-size: var(--text-base);
+  font-weight: 900;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.cardDesc {
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-text-muted);
   line-height: 1.5;
@@ -62,37 +84,128 @@
   overflow: hidden;
 }
 
-.footer {
+.cardFooter {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   flex-wrap: wrap;
-  margin-top: auto;
-  padding-top: var(--space-2);
+  margin-top: var(--space-1);
 }
 
-.dateBadge {
+/* ─── Row view ───────────────────────────────────────────────────────────── */
+
+.row {
   display: flex;
   align-items: center;
+  gap: var(--space-3);
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-bottom: 3px solid var(--color-border-shadow);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: transform 0.1s ease, border-bottom-width 0.1s ease, border-color 0.15s;
+  user-select: none;
+  text-decoration: none;
+  color: inherit;
+}
+
+.row:hover {
+  border-color: var(--color-primary);
+  border-bottom-color: var(--color-primary-shadow);
+}
+
+.row:active {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+}
+
+.rowThumb {
+  width: 5.6rem;
+  height: 5.6rem;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--color-border);
+}
+
+.rowThumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rowThumbPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #58cc02 0%, #1cb0f6 100%);
+}
+
+.rowBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   gap: 0.4rem;
+  min-width: 0;
+}
+
+.rowName {
+  font-size: var(--text-base);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.rowRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.rowXp {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-xp-text);
+  background-color: var(--color-xp);
+  border: 1.5px solid var(--color-xp-shadow);
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.rowArrow {
+  color: var(--color-text-muted);
+}
+
+/* ─── Shared badges ──────────────────────────────────────────────────────── */
+
+.dateBadge,
+.rowDate {
   font-size: var(--text-sm);
   font-weight: 700;
   color: var(--color-text-muted);
-  background-color: var(--color-bg);
-  border: 2px solid var(--color-border);
-  padding: 0.3rem 1rem;
-  border-radius: var(--radius-full);
 }
 
-.eventsBadge {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+.tasksBadge,
+.rowTasks {
   font-size: var(--text-sm);
   font-weight: 700;
   color: var(--color-blue-text);
   background-color: var(--color-blue);
-  border: 2px solid var(--color-blue-shadow);
-  padding: 0.3rem 1rem;
+  border: 1.5px solid var(--color-blue-shadow);
+  padding: 0.2rem 0.7rem;
   border-radius: var(--radius-full);
 }

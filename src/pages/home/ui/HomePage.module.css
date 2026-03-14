@@ -2,11 +2,20 @@
   padding-block: var(--space-6);
 }
 
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+
 .pageHeader {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-3);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .title {
@@ -25,55 +34,90 @@
   border-radius: var(--radius-full);
 }
 
+/* ─── View toggle ────────────────────────────────────────────────────────── */
+
+.viewToggle {
+  display: flex;
+  gap: 0.4rem;
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-bottom: 3px solid var(--color-border-shadow);
+  border-radius: var(--radius-lg);
+  padding: 0.3rem;
+}
+
+.viewBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.viewBtn:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.viewBtnActive {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-text) !important;
+}
+
+/* ─── Card grid ──────────────────────────────────────────────────────────── */
+
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
 }
 
-@media (min-width: 576px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.skeleton {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
+/* ─── List ───────────────────────────────────────────────────────────────── */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
-@media (min-width: 576px) {
-  .skeleton {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .skeleton {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
+/* ─── Skeletons ──────────────────────────────────────────────────────────── */
 
 .skeletonCard {
-  height: 17rem;
+  height: 22rem;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--color-border);
   background: linear-gradient(90deg, #efefef 25%, #f9f9f9 50%, #efefef 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
+}
+
+.skeletonRow {
+  height: 7.2rem;
   border-radius: var(--radius-xl);
   border: 2px solid var(--color-border);
+  background: linear-gradient(90deg, #efefef 25%, #f9f9f9 50%, #efefef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
+  0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ─── Misc ───────────────────────────────────────────────────────────────── */
 
 .sentinel {
   height: 1px;
