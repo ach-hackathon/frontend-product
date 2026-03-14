@@ -45,7 +45,7 @@ function EventStep({ event, index, isLast }: { event: ChallengeEventApiModel; in
   )
 }
 
-function ChallengeHero({ fileId, name }: { fileId: string | null; name: string }) {
+function ChallengeHero({ fileId }: { fileId: string | null }) {
   const { data: imageUrl } = useImageUrl(fileId)
 
   return (
@@ -93,7 +93,7 @@ export function ChallengePage() {
     <div className={styles.page}>
       {/* Full-bleed hero */}
       <div className={styles.heroWrapper}>
-        <ChallengeHero fileId={challenge.fileId} name={challenge.name ?? ''} />
+        <ChallengeHero fileId={challenge.fileId} />
         <div className={styles.heroOverlay} />
 
         <button className={styles.backButton} onClick={() => navigate(-1)}>
