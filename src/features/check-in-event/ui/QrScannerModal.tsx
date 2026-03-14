@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Html5Qrcode } from 'html5-qrcode'
+import { BottomSheet } from '@/shared/ui/BottomSheet'
 import styles from './QrScannerModal.module.css'
 
 interface QrScannerModalProps {
@@ -12,7 +13,6 @@ const SCANNER_ID = 'qr-scanner-container'
 export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
   const scannerRef = useRef<Html5Qrcode | null>(null)
   const scannedRef = useRef(false)
-  // Stable ref so the scanner effect never needs to restart when the callback changes
   const onScanRef = useRef(onScan)
   useLayoutEffect(() => {
     onScanRef.current = onScan
@@ -42,11 +42,11 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
         void scannerRef.current.stop().catch(console.error)
       }
     }
-  }, []) // запускается единожды при монтировании
+  }, [])
 
   return (
-    <div className={styles.backdrop} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <BottomSheet onClose={onClose}>
+      <div className={styles.content}>
         <div className={styles.header}>
           <h2 className={styles.title}>Сканируйте QR-код</h2>
           <button className={styles.closeButton} onClick={onClose}>
@@ -56,6 +56,6 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
         <div id={SCANNER_ID} className={styles.scanner} />
         <p className={styles.hint}>Наведите камеру на QR-код задания</p>
       </div>
-    </div>
+    </BottomSheet>
   )
 }

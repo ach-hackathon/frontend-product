@@ -1,34 +1,8 @@
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-@media (min-width: 640px) {
-  .backdrop {
-    align-items: center;
-  }
-}
-
-.modal {
-  background: var(--color-bg);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  width: 100%;
-  max-width: 480px;
-  padding: var(--space-5);
+.content {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-}
-
-@media (min-width: 640px) {
-  .modal {
-    border-radius: var(--radius-xl);
-  }
+  padding: var(--space-4) var(--space-5) var(--space-5);
 }
 
 .header {
