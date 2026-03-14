@@ -7,9 +7,10 @@ export interface CheckInEventDto {
 
 export interface CheckInEventResult {
   pointsEarned: number
-  achievementIds: string[] | null
+  completedAchievementIds: string[] | null
   giftIds: string[] | null
-  isEventCompleted: boolean
+  giftRewardIds: string[] | null
+  campaignCompleted: boolean
 }
 
 export interface CheckInEventResponse {

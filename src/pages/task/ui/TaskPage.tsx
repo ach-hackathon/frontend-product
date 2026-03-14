@@ -20,10 +20,10 @@ function TaskHero({ fileId }: { fileId: string | null }) {
 function CheckInResult({ result }: { result: CheckInEventResult }) {
   return (
     <div className={styles.resultCard}>
-      <div className={styles.resultIcon}>{result.isEventCompleted ? '✅' : '⚡'}</div>
+      <div className={styles.resultIcon}>{result.campaignCompleted ? '✅' : '⚡'}</div>
       <div>
         <p className={styles.resultTitle}>
-          {result.isEventCompleted ? 'Задание выполнено!' : 'Отмечено!'}
+          {result.campaignCompleted ? 'Задание выполнено!' : 'Отмечено!'}
         </p>
         <p className={styles.resultPoints}>+{result.pointsEarned} XP</p>
       </div>

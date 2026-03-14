@@ -15,6 +15,7 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
   const scannedRef = useRef(false)
   const onScanRef = useRef(onScan)
   const [isReady, setIsReady] = useState(false)
+  const [cameraError, setCameraError] = useState<string | null>(null)
   useLayoutEffect(() => {
     onScanRef.current = onScan
   })
@@ -37,7 +38,13 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
         undefined,
       )
       .then(() => setIsReady(true))
-      .catch(console.error)
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err)
+        setCameraError(msg.toLowerCase().includes('permission')
+          ? 'Нет доступа к камере. Разрешите доступ в настройках браузера.'
+          : 'Не удалось запустить камеру. Попробуйте ещё раз.'
+        )
+      })
 
     return () => {
       if (scannerRef.current?.isScanning) {
@@ -53,14 +60,18 @@ export function QrScannerModal({ onScan, onClose }: QrScannerModalProps) {
           <h2 className={styles.title}>Сканируйте QR-код</h2>
           <button className={styles.closeButton} onClick={onClose}>✕</button>
         </div>
-        <div className={styles.scannerWrapper}>
-          {!isReady && <div className={styles.skeleton} />}
-          <div
-            id={SCANNER_ID}
-            className={styles.scanner}
-            style={isReady ? undefined : { position: 'absolute', opacity: 0, pointerEvents: 'none' }}
-          />
-        </div>
+        {cameraError ? (
+          <div className={styles.cameraError}>{cameraError}</div>
+        ) : (
+          <div className={styles.scannerWrapper}>
+            {!isReady && <div className={styles.skeleton} />}
+            <div
+              id={SCANNER_ID}
+              className={styles.scanner}
+              style={isReady ? undefined : { position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+            />
+          </div>
+        )}
         <p className={styles.hint}>Наведите камеру на QR-код задания</p>
       </div>
     </BottomSheet>

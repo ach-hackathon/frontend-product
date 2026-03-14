@@ -72,6 +72,17 @@
   50%       { opacity: 0.5; }
 }
 
+.cameraError {
+  padding: var(--space-5);
+  background: #fff0f0;
+  border: 2px solid var(--color-red);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-red);
+  text-align: center;
+}
+
 .scanner {
   width: 100%;
   border-radius: var(--radius-lg);
