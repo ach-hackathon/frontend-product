@@ -20,12 +20,13 @@ function TaskHero({ fileId }: { fileId: string | null }) {
 function CheckInResult({ result }: { result: CheckInEventResult }) {
   return (
     <div className={styles.resultCard}>
-      <div className={styles.resultIcon}>{result.campaignCompleted ? '✅' : '⚡'}</div>
+      <div className={styles.resultIcon}>✅</div>
       <div>
-        <p className={styles.resultTitle}>
-          {result.campaignCompleted ? 'Задание выполнено!' : 'Отмечено!'}
-        </p>
+        <p className={styles.resultTitle}>Задание выполнено!</p>
         <p className={styles.resultPoints}>+{result.pointsEarned} XP</p>
+        {result.campaignCompleted && (
+          <p className={styles.resultCampaign}>🎉 Событие завершено!</p>
+        )}
       </div>
     </div>
   )
@@ -63,9 +64,20 @@ export function TaskPage() {
   const achievements = task.achievements ?? []
   const gifts = task.gifts ?? []
   const checkInResult = checkInData?.data?.entity
+  // Single-задание скрываем кнопку после успешного выполнения;
+  // Multiple — можно сканировать снова
+  const isMultiple = task.type === EventTaskType.Multiple
+  const showScanButton = !checkInResult || isMultiple
 
-  const handleQrScan = (qrCode: string) => {
+  const handleQrScan = (scannedText: string) => {
     setScannerOpen(false)
+    let qrCode = scannedText
+    try {
+      const secret = new URL(scannedText).searchParams.get('secret')
+      if (secret) qrCode = secret
+    } catch {
+      // не URL — передаём как есть
+    }
     checkIn({ campaignEventId: task.id, qrCode })
   }
 
@@ -113,7 +125,7 @@ export function TaskPage() {
         )}
 
         {/* QR scan action */}
-        {task.completionCondition === EventTaskCompletionCondition.ScanQrCode && (
+        {task.completionCondition === EventTaskCompletionCondition.ScanQrCode && showScanButton && (
           <button
             className={styles.scanButton}
             onClick={() => setScannerOpen(true)}

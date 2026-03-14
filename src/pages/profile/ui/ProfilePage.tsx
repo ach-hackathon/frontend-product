@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useWebHaptics } from 'web-haptics/react'
 import { useUser, useUserAchievements } from '@/entities/user'
 import type { UserAchievementApiModel } from '@/entities/user'
 import { useImageUrl } from '@/shared/api/image'
@@ -13,9 +14,10 @@ function formatDate(iso: string): string {
 
 function AchievementCard({ item }: { item: UserAchievementApiModel }) {
   const { data: imageUrl } = useImageUrl(item.achievement.fileId)
+  const { trigger } = useWebHaptics()
 
   return (
-    <div className={styles.achievementCard}>
+    <div className={styles.achievementCard} onClick={() => { void trigger('success') }}>
       <div className={styles.achievementIcon}>
         {imageUrl
           ? <img src={imageUrl} alt={item.achievement.name ?? ''} className={styles.achievementImg} />
