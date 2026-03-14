@@ -1,4 +1,5 @@
 export { ChallengeCard } from './ui/ChallengeCard'
+export { ChallengeImage } from './ui/ChallengeImage'
 export { useChallenges, useChallengeById } from './model/queries'
 export { ChallengeEventType, ChallengeEventCompletionCondition } from './model/types'
 export type { ChallengeApiModel, ChallengeEventApiModel } from './model/types'
