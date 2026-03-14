@@ -54,7 +54,9 @@ export function LoginPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="email">Email</label>
+            <label className={styles.label} htmlFor="email">
+              Email
+            </label>
             <input
               id="email"
               className={clsx(styles.input, errors.email && styles.inputError)}
@@ -69,20 +71,12 @@ export function LoginPage() {
                 },
               })}
             />
-            {errors.email && (
-              <span className={styles.errorMessage}>{errors.email.message}</span>
-            )}
+            {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
           </div>
 
-          {errors.root && (
-            <span className={styles.errorMessage}>{errors.root.message}</span>
-          )}
+          {errors.root && <span className={styles.errorMessage}>{errors.root.message}</span>}
 
-          <button
-            className={styles.button}
-            type="submit"
-            disabled={isPending}
-          >
+          <button className={styles.button} type="submit" disabled={isPending}>
             {isPending && <span className={styles.spinner} />}
             {isPending ? 'Signing in...' : 'Sign in'}
           </button>

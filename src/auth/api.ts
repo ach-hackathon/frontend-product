@@ -29,7 +29,10 @@ export interface VerifyCodeResponse {
 
 export const authApi = {
   requestCode: (email: string) =>
-    apiClient.post<RequestCodeResponse>('/auth/request-code', { email, applicationId: APPLICATION_ID }),
+    apiClient.post<RequestCodeResponse>('/auth/request-code', {
+      email,
+      applicationId: APPLICATION_ID,
+    }),
 
   verifyCode: (data: VerifyCodeRequest) =>
     apiClient.post<VerifyCodeResponse>('/auth/verify-code', data),

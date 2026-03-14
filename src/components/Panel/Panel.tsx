@@ -8,9 +8,5 @@ interface PanelProps {
 }
 
 export function Panel({ children, className }: PanelProps) {
-  return (
-    <div className={clsx(styles.panel, className)}>
-      {children}
-    </div>
-  )
+  return <div className={clsx(styles.panel, className)}>{children}</div>
 }

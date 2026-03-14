@@ -47,7 +47,9 @@
   color: var(--color-text);
   background-color: var(--color-surface);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .input:focus {
@@ -80,7 +82,9 @@
   font-size: var(--text-base);
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s, opacity 0.2s;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,5 +111,7 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

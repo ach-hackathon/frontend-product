@@ -5,7 +5,7 @@ export function parseJwt<T = unknown>(token: string): T {
   const payload = parts[1]
     .replace(/-/g, '+')
     .replace(/_/g, '/')
-    .padEnd(parts[1].length + (4 - (parts[1].length % 4)) % 4, '=')
+    .padEnd(parts[1].length + ((4 - (parts[1].length % 4)) % 4), '=')
 
   return JSON.parse(atob(payload)) as T
 }

@@ -120,17 +120,25 @@ body {
 }
 
 @media (min-width: 576px) {
-  .container { max-width: 540px; }
+  .container {
+    max-width: 540px;
+  }
 }
 
 @media (min-width: 768px) {
-  .container { max-width: 720px; }
+  .container {
+    max-width: 720px;
+  }
 }
 
 @media (min-width: 1024px) {
-  .container { max-width: 960px; }
+  .container {
+    max-width: 960px;
+  }
 }
 
 @media (min-width: 1280px) {
-  .container { max-width: 1200px; }
+  .container {
+    max-width: 1200px;
+  }
 }
