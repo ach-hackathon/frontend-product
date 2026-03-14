@@ -3,6 +3,7 @@ import { AuthGuard } from './providers/AuthGuard'
 import { UserProvider } from './providers/UserProvider'
 import { Layout } from '@/widgets/layout'
 import { HomePage } from '@/pages/home'
+import { ProfilePage } from '@/pages/profile'
 import { LoginPage } from '@/pages/login'
 import { ConfirmCodePage } from '@/pages/confirm-code'
 import { CodeSentPage } from '@/pages/code-sent'
@@ -23,6 +24,7 @@ export function App() {
           <Route element={<UserProvider />}>
             <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
           </Route>
         </Route>

@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 import { useUser } from '@/entities/user'
 import styles from './Layout.module.css'
 
@@ -12,14 +12,12 @@ export function Layout() {
     <div className={styles.layout}>
       <header className={styles.header}>
         <div className={`container ${styles.headerInner}`}>
-          <span className={styles.logo}>Eventigo</span>
+          <Link to="/" className={styles.logo}>Eventigo</Link>
 
-          <div className={styles.profile}>
+          <Link to="/profile" className={styles.profile} aria-label="Личный кабинет">
             <span className={styles.profileName}>{fullName}</span>
-            <div className={styles.avatar} aria-label={fullName}>
-              {initials}
-            </div>
-          </div>
+            <div className={styles.avatar}>{initials}</div>
+          </Link>
         </div>
       </header>
 
