@@ -12,6 +12,7 @@ import { LoginPage } from '@/pages/login'
 import { ConfirmCodePage } from '@/pages/confirm-code'
 import { CodeSentPage } from '@/pages/code-sent'
 import { ErrorPage } from '@/pages/error'
+import { ActionConfirmPage } from '@/pages/action-confirm'
 
 export function App() {
   return (
@@ -26,6 +27,7 @@ export function App() {
         {/* Защищённые страницы с общим layout */}
         <Route element={<AuthGuard />}>
           <Route element={<UserProvider />}>
+            <Route path="/action/confirm" element={<ActionConfirmPage />} />
             <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/achievements" element={<AchievementsPage />} />
