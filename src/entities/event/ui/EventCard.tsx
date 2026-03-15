@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useImageUrl } from '@/shared/api/image'
+import { Tag } from '@/shared/ui/Tag'
 import type { EventApiModel } from '../model/types'
 import styles from './EventCard.module.css'
 
@@ -59,10 +60,10 @@ function RowView({ event }: { event: EventApiModel }) {
         </div>
         <div className={styles.rowBadges}>
           {tasksCount > 0 && (
-            <span className={styles.badgeTasks}>{tasksLabel(tasksCount)}</span>
+            <Tag color="blue">{tasksLabel(tasksCount)}</Tag>
           )}
           {(event.pointsForCompletions ?? 0) > 0 && (
-            <span className={styles.badgePoints}>+{event.pointsForCompletions} XP</span>
+            <Tag color="green">+{event.pointsForCompletions} XP</Tag>
           )}
         </div>
       </div>
