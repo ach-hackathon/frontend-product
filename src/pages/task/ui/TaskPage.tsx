@@ -147,7 +147,7 @@ export function TaskPage() {
             className={styles.scanButton}
             onClick={() => setScannerOpen(true)}
           >
-            📷 Сканировать QR-код
+            Сканировать QR-код
           </button>
         )}
 
