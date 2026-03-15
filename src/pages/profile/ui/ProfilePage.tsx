@@ -17,6 +17,7 @@ function formatDate(iso: string): string {
 }
 
 
+// env variable is guaranteed to be set at build time via Vite define
 const GIFT_PAGE_URL = import.meta.env.VITE_GIFT_PAGE_URL as string
 
 function GiftCard({ item, userId }: { item: UserGiftApiModel; userId: string }) {
@@ -240,7 +241,7 @@ export function ProfilePage() {
         )}
 
         {/* ── Logout ── */}
-        <button className={styles.logoutButton} onClick={handleLogout}>
+        <button className={styles.logoutButton} onClick={handleLogout} type="button">
           Выйти
         </button>
       </div>

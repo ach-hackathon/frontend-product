@@ -164,3 +164,13 @@
   100% { background-position: -200% 0; }
 }
 
+/* ─── Error ──────────────────────────────────────────────────────────────── */
+
+.error {
+  color: var(--color-red);
+  font-size: var(--text-base);
+  font-weight: 700;
+  text-align: center;
+  padding-block: var(--space-8);
+}
+

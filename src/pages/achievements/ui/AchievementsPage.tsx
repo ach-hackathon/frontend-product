@@ -6,14 +6,14 @@ import styles from './AchievementsPage.module.css'
 
 const TOTAL_SLOTS = 15
 
-
 export function AchievementsPage() {
   const user = useUser()
-  const { data, isLoading } = useUserAchievements(user.id)
+  const { data, isLoading, isError } = useUserAchievements(user.id)
   const achievements = data?.data?.items ?? []
   const [showHelp, setShowHelp] = useState(false)
   const [selected, setSelected] = useState<UserAchievementApiModel | null>(null)
 
+  // +3 guarantees at least one full extra row of locked slots after earned badges
   const totalSlots = Math.max(TOTAL_SLOTS, Math.ceil((achievements.length + 3) / 3) * 3)
   const lockedCount = totalSlots - achievements.length
 
@@ -55,7 +55,9 @@ export function AchievementsPage() {
         <AchievementDetailSheet item={selected} onClose={() => setSelected(null)} />
       )}
 
-      {isLoading ? (
+      {isError ? (
+        <p className={styles.error}>Не удалось загрузить достижения. Попробуйте позже.</p>
+      ) : isLoading ? (
         <div className={styles.grid}>
           {Array.from({ length: TOTAL_SLOTS }).map((_, i) => (
             <div key={i} className={styles.skeletonBadge} />

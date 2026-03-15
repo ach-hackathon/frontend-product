@@ -208,7 +208,7 @@ export function EventPage() {
         <div className={styles.metaBar}>
           <span className={styles.metaChip}>
             📅 {formatDate(campaign.startDate)}
-            {campaign.endDate ? ` — ${formatDate(campaign.endDate)}` : ''}
+            {campaign.endDate ? ` - ${formatDate(campaign.endDate)}` : ''}
           </span>
           {tasks.length > 0 && (
             <span className={styles.metaChip}>

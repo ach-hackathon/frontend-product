@@ -12,7 +12,7 @@ interface EventCardProps {
 function formatDateRange(start: string, end?: string | null): string {
   const fmt = (iso: string) =>
     new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }).format(new Date(iso))
-  return end ? `${fmt(start)} – ${fmt(end)}` : fmt(start)
+  return end ? `${fmt(start)} - ${fmt(end)}` : fmt(start)
 }
 
 function tasksLabel(count: number): string {
