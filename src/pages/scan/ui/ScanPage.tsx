@@ -1,16 +1,22 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCheckInEvent, QrScannerView } from '@/features/check-in-event'
-import type { CheckInEventResult } from '@/features/check-in-event'
 import styles from './ScanPage.module.css'
 
-function parseQrUrl(scannedText: string): { campaignEventId: string; qrCode: string } | null {
+interface ParsedQr {
+  campaignEventId: string
+  qrCode: string | null
+}
+
+function parseQrUrl(scannedText: string): ParsedQr | null {
   try {
     const url = new URL(scannedText)
+    const actionId = url.searchParams.get('action')
+    const eventId = url.searchParams.get('event')
     const secret = url.searchParams.get('secret')
-    const taskMatch = url.pathname.match(/\/task\/([^/]+)/)
-    if (taskMatch?.[1] && secret) {
-      return { campaignEventId: taskMatch[1], qrCode: secret }
+    if (actionId && eventId) {
+      return { campaignEventId: actionId, qrCode: secret }
     }
   } catch {
     // не URL
@@ -20,22 +26,23 @@ function parseQrUrl(scannedText: string): { campaignEventId: string; qrCode: str
 
 export function ScanPage() {
   const queryClient = useQueryClient()
-  const [result, setResult] = useState<CheckInEventResult | null>(null)
+  const navigate = useNavigate()
   const [parseError, setParseError] = useState(false)
   const [scanKey, setScanKey] = useState(0)
 
-  const { mutate: checkIn, isPending, error: checkInError } = useCheckInEvent({
-    onSuccess: (data) => {
-      const entity = data?.data?.entity
-      if (entity) {
-        setResult(entity)
-        void queryClient.invalidateQueries({ queryKey: ['event-progress'] })
-      }
+  const { mutate: checkIn, reset, isPending, error: checkInError } = useCheckInEvent({
+    onSuccess: (_data, variables) => {
+      void Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['event-progress'] }),
+        queryClient.invalidateQueries({ queryKey: ['event-leaderboard'] }),
+        queryClient.invalidateQueries({ queryKey: ['event-task', variables.campaignEventId] }),
+      ]).then(() => {
+        navigate(`/task/${variables.campaignEventId}`, { replace: true })
+      })
     },
   })
 
   function handleScan(scannedText: string) {
-    setResult(null)
     setParseError(false)
     const parsed = parseQrUrl(scannedText)
     if (parsed) {
@@ -46,12 +53,12 @@ export function ScanPage() {
   }
 
   function handleRescan() {
-    setResult(null)
+    reset()
     setParseError(false)
     setScanKey((k) => k + 1)
   }
 
-  const showScanner = !result && !isPending && !parseError && !checkInError
+  const showScanner = !isPending && !parseError && !checkInError
 
   return (
     <div className={`container ${styles.page}`}>
@@ -68,20 +75,6 @@ export function ScanPage() {
         <div className={styles.pending}>
           <div className={styles.pendingSpinner} />
           <p className={styles.pendingText}>Проверяем QR-код...</p>
-        </div>
-      )}
-
-      {result && (
-        <div className={styles.resultCard}>
-          <div className={styles.resultIcon}>✅</div>
-          <p className={styles.resultTitle}>Задание выполнено!</p>
-          <p className={styles.resultPoints}>+{result.pointsEarned} XP</p>
-          {result.campaignCompleted && (
-            <p className={styles.resultBadge}>🎉 Событие завершено!</p>
-          )}
-          <button className={styles.rescanButton} onClick={handleRescan}>
-            Сканировать ещё
-          </button>
         </div>
       )}
 
