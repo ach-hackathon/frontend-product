@@ -64,14 +64,35 @@ export function AchievementsPage() {
           ))}
         </div>
       ) : (
-        <div className={styles.grid}>
-          {achievements.map((item) => (
-            <AchievementBadge key={item.id} item={item} size={104} onClick={() => setSelected(item)} />
-          ))}
-          {Array.from({ length: lockedCount }).map((_, i) => (
-            <LockedAchievementBadge key={`locked-${i}`} size={104} />
-          ))}
-        </div>
+        <>
+          {achievements.length === 0 && (
+            <div className={styles.emptyState}>
+              <span className={styles.emptyIcon}>🎯</span>
+              <p className={styles.emptyTitle}>Пока нет достижений</p>
+              <p className={styles.emptyDesc}>Выполни первое задание на событии — и получи свой первый бейдж!</p>
+            </div>
+          )}
+          <div className={styles.grid}>
+            {achievements.map((item, i) => (
+              <div
+                key={item.id}
+                className={styles.gridItem}
+                style={{ '--delay': `${i * 40}ms` } as React.CSSProperties}
+              >
+                <AchievementBadge item={item} size={104} onClick={() => setSelected(item)} />
+              </div>
+            ))}
+            {Array.from({ length: lockedCount }).map((_, i) => (
+              <div
+                key={`locked-${i}`}
+                className={styles.gridItem}
+                style={{ '--delay': `${(achievements.length + i) * 40}ms` } as React.CSSProperties}
+              >
+                <LockedAchievementBadge size={104} />
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )
