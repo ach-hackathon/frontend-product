@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { getToken, setToken } from '@/shared/lib/token'
@@ -13,6 +13,8 @@ interface LoginFormValues {
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const redirectTo = (location.state as { from?: string } | null)?.from ?? '/'
   const [leaving, setLeaving] = useState(false)
   const {
     register,
@@ -37,8 +39,13 @@ export function LoginPage() {
       if (accessToken) {
         setToken(accessToken)
         setLeaving(true)
-        setTimeout(() => navigate('/'), 1000)
+        const target = redirectTo
+        sessionStorage.removeItem('auth_redirect')
+        setTimeout(() => navigate(target), 1000)
       } else {
+        if (redirectTo !== '/') {
+          sessionStorage.setItem('auth_redirect', redirectTo)
+        }
         navigate('/code/sent', { state: { email, message } })
       }
     } catch {

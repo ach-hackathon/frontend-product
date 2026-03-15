@@ -28,7 +28,9 @@ export function ConfirmCodePage() {
         if (accessToken) {
           setToken(accessToken)
           queryClient.clear()
-          navigate('/', { replace: true })
+          const redirectTo = sessionStorage.getItem('auth_redirect') ?? '/'
+          sessionStorage.removeItem('auth_redirect')
+          navigate(redirectTo, { replace: true })
         } else {
           navigate('/error', { replace: true })
         }
