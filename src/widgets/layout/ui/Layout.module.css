@@ -12,6 +12,6 @@
    * на iPhone и меняется когда браузерный UI показывается/скрывается.
    * 5.6rem — высота самого навбара.
    */
-  /* nav высота ~5.2rem + отступ снизу 1.2rem + safe-area */
-  padding-bottom: calc(7.4rem + env(safe-area-inset-bottom, 0px));
+  /* nav: 7.2rem menu + safe-area */
+  padding-bottom: calc(7.2rem + env(safe-area-inset-bottom, 0px));
 }
