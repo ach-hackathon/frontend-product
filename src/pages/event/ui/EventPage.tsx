@@ -184,9 +184,8 @@ export function EventPage() {
     )
   }
 
-  const { campaign, progressPercent, events } = data.data.entity
+  const { campaign, events } = data.data.entity
   const tasks = events ?? []
-  const pct = Math.round(progressPercent)
   const completedCount = tasks.filter((t) => t.isCompleted).length
   const leaderboard = lbData?.data?.items ?? []
 
@@ -226,11 +225,23 @@ export function EventPage() {
         {tasks.length > 0 && (
           <div className={styles.progressCard}>
             <div className={styles.progressHeader}>
-              <span className={styles.progressLabel}>Прогресс</span>
-              <span className={styles.progressPct}>{pct}%</span>
+              <span className={styles.progressLabel}>Выполнено заданий</span>
+              <span className={styles.progressDot} />
+              <span className={styles.progressLabel}>{completedCount} из {tasks.length}</span>
             </div>
-            <div className={styles.progressBar}>
-              <div className={styles.progressFill} style={{ width: `${pct}%` }} />
+            <div className={styles.progressTrack}>
+              {tasks.map((task, i) => (
+                <div
+                  key={task.id}
+                  className={
+                    i < completedCount
+                      ? styles.segmentDone
+                      : i === completedCount
+                        ? styles.segmentNext
+                        : styles.segmentEmpty
+                  }
+                />
+              ))}
             </div>
           </div>
         )}

@@ -141,6 +141,89 @@
   border-color: var(--color-border);
 }
 
+/* ─── Progress bar ───────────────────────────────────────────────────────── */
+
+.progressCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 4px 4px;
+  gap: 8px;
+  background: #35C04C;
+  border-radius: 12px;
+}
+
+.progressHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  align-self: stretch;
+}
+
+.progressLabel {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.progressDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #F4F5F6;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.progressTrack {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12px;
+  gap: 8px;
+  align-self: stretch;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.segmentDone,
+.segmentNext,
+.segmentEmpty {
+  flex: 1;
+  height: 12px;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.segmentDone {
+  background: linear-gradient(180deg, #71E71D 49.52%, #35C04C 50%);
+}
+
+.segmentDone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 6px;
+  right: 6px;
+  background: linear-gradient(360deg, rgba(255,255,255,0) 0%, #ffffff 50%, #ffffff 50.01%, rgba(255,255,255,0) 100%);
+  mix-blend-mode: soft-light;
+}
+
+.segmentNext {
+  background: #E4E6E8;
+}
+
+.segmentEmpty {
+  background: #F4F5F6;
+}
+
 /* ─── Scan button ────────────────────────────────────────────────────────── */
 
 .scanButton {

@@ -7,6 +7,7 @@ import { GiftOverlay } from '@/features/gift-overlay'
 import { useImageUrl } from '@/shared/api/image'
 import styles from './TaskPage.module.css'
 
+
 function TaskHero({ fileId }: { fileId: string | null }) {
   const { data: imageUrl } = useImageUrl(fileId)
 
