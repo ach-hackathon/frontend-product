@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { Panel } from '@/shared/ui/Panel'
 import { getToken, setToken } from '@/shared/lib/token'
 import { authApi } from '@/features/auth'
 import styles from './LoginPage.module.css'
@@ -14,6 +13,8 @@ interface LoginFormValues {
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const redirectTo = (location.state as { from?: string } | null)?.from ?? '/'
   const [leaving, setLeaving] = useState(false)
   const {
     register,
@@ -38,50 +39,63 @@ export function LoginPage() {
       if (accessToken) {
         setToken(accessToken)
         setLeaving(true)
-        setTimeout(() => navigate('/'), 1000)
+        const target = redirectTo
+        sessionStorage.removeItem('auth_redirect')
+        setTimeout(() => navigate(target), 1000)
       } else {
+        if (redirectTo !== '/') {
+          sessionStorage.setItem('auth_redirect', redirectTo)
+        }
         navigate('/code/sent', { state: { email, message } })
       }
     } catch {
-      setError('root', { message: 'Something went wrong. Please try again.' })
+      setError('root', { message: 'Что-то пошло не так. Попробуйте ещё раз.' })
     }
   }
 
   return (
     <div className={clsx(styles.page, leaving && styles.pageLeaving)}>
-      <Panel className={styles.panel}>
-        <h1 className={styles.title}>Sign in</h1>
+      <div className={styles.content}>
+        <img
+          src="/mascot.png"
+          alt="EventiGo маскот"
+          className={styles.mascot}
+          draggable={false}
+        />
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="email">
-              Email
+        <h1 className={styles.title}>
+          Добро пожаловать<br />в EventiGo!
+        </h1>
+
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className={clsx(styles.inputWrapper, errors.email && styles.inputWrapperError)}>
+            <label className={styles.inputLabel} htmlFor="email">
+              Электронная почта
             </label>
             <input
               id="email"
-              className={clsx(styles.input, errors.email && styles.inputError)}
+              className={styles.input}
               type="email"
-              placeholder="you@example.com"
               autoComplete="email"
               {...register('email', {
-                required: 'Email is required',
+                required: 'Введите электронную почту',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Enter a valid email address',
+                  message: 'Введите корректный email',
                 },
               })}
             />
-            {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
           </div>
-
+          {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
           {errors.root && <span className={styles.errorMessage}>{errors.root.message}</span>}
 
           <button className={styles.button} type="submit" disabled={isPending}>
-            {isPending && <span className={styles.spinner} />}
-            {isPending ? 'Signing in...' : 'Sign in'}
+            {isPending ? <span className={styles.spinner} /> : 'Войти'}
           </button>
         </form>
-      </Panel>
+      </div>
+
+      <p className={styles.footer}>Design by Полуостров Эйнштейна</p>
     </div>
   )
 }

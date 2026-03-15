@@ -67,6 +67,7 @@ export interface EventProgressResponse {
 
 export interface UserCampaignEventApiModel {
   id: string
+  campaignId: string | null
   name: string | null
   description: string | null
   pointsForCompletions: number

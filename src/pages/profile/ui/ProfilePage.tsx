@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import { useWebHaptics } from 'web-haptics/react'
 import { useUser, useUserAchievements } from '@/entities/user'
 import type { UserAchievementApiModel } from '@/entities/user'
+import { useUserGifts, UserGiftStatus } from '@/entities/gift'
+import type { UserGiftApiModel } from '@/entities/gift'
 import { useImageUrl } from '@/shared/api/image'
 import { removeToken } from '@/shared/lib/token'
 import styles from './ProfilePage.module.css'
@@ -33,15 +35,63 @@ function AchievementCard({ item }: { item: UserAchievementApiModel }) {
   )
 }
 
+const GIFT_PAGE_URL = import.meta.env.VITE_GIFT_PAGE_URL as string
+
+function GiftCard({ item, userId }: { item: UserGiftApiModel; userId: string }) {
+  const { data: imageUrl } = useImageUrl(item.gift?.fileId ?? null)
+
+  const isPending = item.status === UserGiftStatus.Pending
+  const isDone = item.status === UserGiftStatus.Done
+  const isCancelled = item.status === UserGiftStatus.Cancelled
+
+  return (
+    <div className={styles.giftCard}>
+      <div className={styles.giftIcon}>
+        {imageUrl
+          ? <img src={imageUrl} alt={item.gift?.name ?? ''} className={styles.giftImg} />
+          : <span>🎁</span>
+        }
+      </div>
+      <div className={styles.giftInfo}>
+        <p className={styles.giftName}>{item.gift?.name ?? 'Подарок'}</p>
+        {item.gift?.description && (
+          <p className={styles.giftDesc}>{item.gift.description}</p>
+        )}
+        {isDone && (
+          <span className={`${styles.giftStatusBadge} ${styles.giftStatusDone}`}>✅ Выдано</span>
+        )}
+        {isCancelled && (
+          <span className={`${styles.giftStatusBadge} ${styles.giftStatusCancelled}`}>Отменено</span>
+        )}
+        {isPending && (
+          <a
+            href={`${GIFT_PAGE_URL}/?userId=${userId}&giftId=${item.giftId}`}
+            className={styles.giftClaimButton}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Забрать подарок
+          </a>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export function ProfilePage() {
   const user = useUser()
   const navigate = useNavigate()
   const { data: achievementsData, isLoading: achievementsLoading } = useUserAchievements(user.id)
+  const { data: giftsData, isLoading: giftsLoading } = useUserGifts(user.id)
 
   const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Аноним'
   const initials = [user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'
   const achievements = achievementsData?.data?.items ?? []
   const roles = user.roles?.filter((r) => r.name) ?? []
+  const allGifts = giftsData?.data?.items ?? []
+  const availableGifts = allGifts.filter((g) => g.status === UserGiftStatus.Pending)
+  const receivedGifts = allGifts.filter((g) => g.status === UserGiftStatus.Done)
+  const cancelledGifts = allGifts.filter((g) => g.status === UserGiftStatus.Cancelled)
 
   function handleLogout() {
     removeToken()
@@ -67,7 +117,7 @@ export function ProfilePage() {
       <div className={styles.stats}>
         <div className={styles.statCard}>
           <span className={styles.statIcon}>💎</span>
-          <span className={styles.statValue}>{user.balance}</span>
+          <span className={styles.statValue}>{user.userPoints?.points ?? 0}</span>
           <span className={styles.statLabel}>Баланс</span>
         </div>
         {user.userPoints && (
@@ -81,11 +131,6 @@ export function ProfilePage() {
               <span className={styles.statIcon}>⚡</span>
               <span className={styles.statValue}>{user.userPoints.experiencePoints}</span>
               <span className={styles.statLabel}>Опыт (XP)</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statIcon}>🎯</span>
-              <span className={styles.statValue}>{user.userPoints.points}</span>
-              <span className={styles.statLabel}>Очки</span>
             </div>
           </>
         )}
@@ -124,6 +169,53 @@ export function ProfilePage() {
               <AchievementCard key={item.id} item={item} />
             ))}
           </div>
+        )}
+      </section>
+
+      {/* Gifts */}
+      <section className={styles.giftsSection}>
+        <h2 className={styles.giftsTitle}>🎁 Подарки</h2>
+        {giftsLoading ? (
+          <div className={styles.giftsGrid}>
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className={styles.giftSkeleton} />
+            ))}
+          </div>
+        ) : allGifts.length === 0 ? (
+          <p className={styles.giftsEmpty}>Подарков пока нет</p>
+        ) : (
+          <>
+            {availableGifts.length > 0 && (
+              <>
+                <p className={styles.giftsSubtitle}>Доступны для получения</p>
+                <div className={styles.giftsGrid}>
+                  {availableGifts.map((item) => (
+                    <GiftCard key={item.id} item={item} userId={user.id} />
+                  ))}
+                </div>
+              </>
+            )}
+            {receivedGifts.length > 0 && (
+              <>
+                <p className={styles.giftsSubtitle}>Полученные</p>
+                <div className={styles.giftsGrid}>
+                  {receivedGifts.map((item) => (
+                    <GiftCard key={item.id} item={item} userId={user.id} />
+                  ))}
+                </div>
+              </>
+            )}
+            {cancelledGifts.length > 0 && (
+              <>
+                <p className={styles.giftsSubtitle}>Отменённые</p>
+                <div className={styles.giftsGrid}>
+                  {cancelledGifts.map((item) => (
+                    <GiftCard key={item.id} item={item} userId={user.id} />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
       </section>
 
