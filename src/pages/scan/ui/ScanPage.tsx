@@ -69,32 +69,45 @@ export function ScanPage() {
   const showScanner = !isPending && !parseError && !checkInError && !businessError
 
   return (
-    <div className={`container ${styles.page}`}>
-      <h1 className={styles.title}>Сканер QR-кода</h1>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Сканировать QR</h1>
+        <p className={styles.subtitle}>Наведите камеру на QR-код задания</p>
+      </div>
 
       {showScanner && (
-        <>
+        <div className={styles.scannerFrame}>
           <QrScannerView key={scanKey} onScan={handleScan} />
-          <p className={styles.hint}>Наведите камеру на QR-код задания</p>
-        </>
+          <div className={styles.overlay} aria-hidden="true">
+            <span className={`${styles.corner} ${styles.cornerTL}`} />
+            <span className={`${styles.corner} ${styles.cornerTR}`} />
+            <span className={`${styles.corner} ${styles.cornerBL}`} />
+            <span className={`${styles.corner} ${styles.cornerBR}`} />
+            <div className={styles.scanLine} />
+          </div>
+        </div>
       )}
 
       {isPending && (
-        <div className={styles.pending}>
-          <div className={styles.pendingSpinner} />
-          <p className={styles.pendingText}>Проверяем QR-код...</p>
+        <div className={styles.stateCard}>
+          <div className={styles.spinner} />
+          <p className={styles.stateTitle}>Проверяем QR-код...</p>
+          <p className={styles.stateHint}>Пожалуйста, подождите</p>
         </div>
       )}
 
       {(parseError || checkInError || businessError) && (
-        <div className={styles.errorCard}>
-          <div className={styles.resultIcon}>❌</div>
-          <p className={styles.resultTitle}>
-            {parseError
-              ? 'QR-код не распознан'
-              : businessError ?? 'Не удалось выполнить задание'}
+        <div className={styles.stateCard}>
+          <div className={styles.stateIcon}>❌</div>
+          <p className={styles.stateTitle}>
+            {parseError ? 'QR-код не распознан' : businessError ?? 'Не удалось выполнить задание'}
           </p>
-          <button className={styles.rescanButton} onClick={handleRescan}>
+          <p className={styles.stateHint}>
+            {parseError
+              ? 'Убедитесь, что это QR-код задания'
+              : 'Попробуйте отсканировать ещё раз'}
+          </p>
+          <button className={styles.retryButton} onClick={handleRescan}>
             Попробовать снова
           </button>
         </div>
