@@ -53,10 +53,12 @@ function RowView({ event }: { event: EventApiModel }) {
       </div>
 
       <div className={styles.rowBody}>
-        <p className={styles.rowName}>{event.name ?? 'Без названия'}</p>
-        <div className={styles.rowDate}>
-          <IconCalendar />
-          <span>{formatDateRange(event.startDate, event.endDate)}</span>
+        <div className={styles.rowTop}>
+          <p className={styles.rowName}>{event.name ?? 'Без названия'}</p>
+          <div className={styles.rowDate}>
+            <IconCalendar />
+            <span>{formatDateRange(event.startDate, event.endDate)}</span>
+          </div>
         </div>
         <div className={styles.rowBadges}>
           {tasksCount > 0 && (
