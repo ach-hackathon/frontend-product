@@ -6,6 +6,8 @@ export function useCurrentUser() {
   return useQuery({
     queryKey: ['user/info'],
     queryFn: () => apiClient.get<UserInfoResponse>('/user/info'),
+    // не кэшировать: identity-критичные данные, всегда свежие
+    staleTime: 0,
   })
 }
 
