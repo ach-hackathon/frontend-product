@@ -42,6 +42,7 @@ export function TaskPage() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['event-progress'] })
       void queryClient.invalidateQueries({ queryKey: ['event-task', id] })
+      void queryClient.invalidateQueries({ queryKey: ['event-leaderboard'] })
     },
   })
   const [scannerOpen, setScannerOpen] = useState(false)
