@@ -224,6 +224,26 @@
   background: #F4F5F6;
 }
 
+/* ─── Scan action ────────────────────────────────────────────────────────── */
+
+.scanAction {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.scanHint {
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  line-height: 1.4;
+}
+
 /* ─── Scan button ────────────────────────────────────────────────────────── */
 
 .scanButton {

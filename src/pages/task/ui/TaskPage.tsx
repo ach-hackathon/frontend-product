@@ -144,12 +144,15 @@ export function TaskPage() {
         )}
 
         {showScanButton && (
-          <button
-            className={styles.scanButton}
-            onClick={() => setScannerOpen(true)}
-          >
-            Сканировать QR-код
-          </button>
+          <div className={styles.scanAction}>
+            <p className={styles.scanHint}>Сканируй QR-код, чтобы получить награду!</p>
+            <button
+              className={styles.scanButton}
+              onClick={() => setScannerOpen(true)}
+            >
+              Сканировать QR-код
+            </button>
+          </div>
         )}
 
         {isPending && (
