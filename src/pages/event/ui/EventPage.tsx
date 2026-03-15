@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useEventProgress, useEventLeaderboard, EventTaskCompletionCondition, EventTaskType } from '@/entities/event'
 import type { EventProgressTaskApiModel, EventLeaderboardEntryApiModel } from '@/entities/event'
 import { useUser } from '@/entities/user'
 import { useImageUrl } from '@/shared/api/image'
+import { Tabs } from '@/shared/ui/Tabs'
+import type { TabItem } from '@/shared/ui/Tabs'
 import styles from './EventPage.module.css'
 
 function formatDate(iso: string): string {
@@ -67,10 +70,18 @@ function LeaderboardRow({
   )
 }
 
+type Tab = 'tasks' | 'leaderboard'
+
+const EVENT_TABS: TabItem<Tab>[] = [
+  { value: 'tasks', label: '🎯 Задания' },
+  { value: 'leaderboard', label: '🏆 Лидерборд' },
+]
+
 export function EventPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const user = useUser()
+  const [activeTab, setActiveTab] = useState<Tab>('tasks')
   const { data, isLoading, isError } = useEventProgress(id ?? '', user.id)
   const { data: lbData, isLoading: lbLoading } = useEventLeaderboard(id ?? '')
 
@@ -150,42 +161,49 @@ export function EventPage() {
           </div>
         )}
 
-        {/* Tasks */}
-        {tasks.length > 0 && (
+        {/* Tabs */}
+        <Tabs tabs={EVENT_TABS} active={activeTab} onChange={setActiveTab} />
+
+        {/* Tasks tab */}
+        {activeTab === 'tasks' && (
           <section className={styles.tasksSection}>
-            <h2 className={styles.sectionTitle}>Задания</h2>
-            <div className={styles.tasksList}>
-              {tasks.map((task) => (
-                <TaskRow key={task.id} task={task} />
-              ))}
-            </div>
+            {tasks.length === 0 ? (
+              <p className={styles.lbEmpty}>Заданий пока нет</p>
+            ) : (
+              <div className={styles.tasksList}>
+                {tasks.map((task) => (
+                  <TaskRow key={task.id} task={task} />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
-        {/* Leaderboard */}
-        <section className={styles.tasksSection}>
-          <h2 className={styles.sectionTitle}>🏆 Лидерборд</h2>
-          {lbLoading ? (
-            <div className={styles.lbSkeleton}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className={styles.lbSkeletonRow} />
-              ))}
-            </div>
-          ) : leaderboard.length === 0 ? (
-            <p className={styles.lbEmpty}>Пока никто не набрал очки</p>
-          ) : (
-            <div className={styles.lbList}>
-              {leaderboard.map((entry, i) => (
-                <LeaderboardRow
-                  key={entry.id}
-                  entry={entry}
-                  rank={i + 1}
-                  isCurrentUser={entry.id === user.id}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+        {/* Leaderboard tab */}
+        {activeTab === 'leaderboard' && (
+          <section className={styles.tasksSection}>
+            {lbLoading ? (
+              <div className={styles.lbSkeleton}>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className={styles.lbSkeletonRow} />
+                ))}
+              </div>
+            ) : leaderboard.length === 0 ? (
+              <p className={styles.lbEmpty}>Пока никто не набрал очки</p>
+            ) : (
+              <div className={styles.lbList}>
+                {leaderboard.map((entry, i) => (
+                  <LeaderboardRow
+                    key={entry.id}
+                    entry={entry}
+                    rank={i + 1}
+                    isCurrentUser={entry.id === user.id}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </div>
   )
