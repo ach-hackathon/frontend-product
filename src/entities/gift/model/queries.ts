@@ -15,3 +15,11 @@ export function useUserGifts(userId: string) {
     enabled: !!userId,
   })
 }
+
+export function useCampaignGifts(campaignId: string) {
+  return useQuery({
+    queryKey: ['user/gifts', 'campaign', campaignId],
+    queryFn: () => fetchUserGifts(campaignId),
+    enabled: !!campaignId,
+  })
+}
