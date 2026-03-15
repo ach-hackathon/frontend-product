@@ -34,10 +34,10 @@ export function LoginPage() {
   async function onSubmit(values: LoginFormValues) {
     try {
       const res = await mutateAsync(values)
-      const { accessToken, email, message } = res.data.entity
+      const { accessToken, expiresAtUtc, email, message } = res.data.entity
 
       if (accessToken) {
-        setToken(accessToken)
+        setToken(accessToken, expiresAtUtc)
         setLeaving(true)
         const target = redirectTo
         sessionStorage.removeItem('auth_redirect')

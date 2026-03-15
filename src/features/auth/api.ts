@@ -6,6 +6,7 @@ export interface RequestCodeResponse {
       email: string
       message: string
       accessToken?: string
+      expiresAtUtc?: string
       isInstantLogin?: boolean
     }
   }

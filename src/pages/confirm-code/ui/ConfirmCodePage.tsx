@@ -24,9 +24,9 @@ export function ConfirmCodePage() {
 
     mutateAsync({ email, code })
       .then((res) => {
-        const { accessToken } = res.data.entity
+        const { accessToken, expiresAtUtc } = res.data.entity
         if (accessToken) {
-          setToken(accessToken)
+          setToken(accessToken, expiresAtUtc)
           queryClient.clear()
           const redirectTo = sessionStorage.getItem('auth_redirect') ?? '/'
           sessionStorage.removeItem('auth_redirect')
