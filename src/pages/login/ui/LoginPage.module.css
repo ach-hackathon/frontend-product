@@ -151,6 +151,16 @@
   to { transform: rotate(360deg); }
 }
 
+/* ─── Hint ───────────────────────────────────────────────────────────────── */
+
+.hint {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #9e9e9e;
+  text-align: center;
+  margin: 0;
+}
+
 /* ─── Footer ─────────────────────────────────────────────────────────────── */
 
 .footer {

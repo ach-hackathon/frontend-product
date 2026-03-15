@@ -92,6 +92,10 @@ export function LoginPage() {
           <button className={styles.button} type="submit" disabled={isPending}>
             {isPending ? <span className={styles.spinner} /> : 'Войти'}
           </button>
+
+          <p className={styles.hint}>
+            Для входа достаточно просто указать ваш email
+          </p>
         </form>
       </div>
 

@@ -1,5 +1,13 @@
+import { lazy, Suspense, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
+
 import styles from './BottomNav.module.css'
+
+const DOUBLE_TAP_DELAY = 300
+
+const MascotGame = lazy(() =>
+  import('@/features/mascot-game').then((m) => ({ default: m.MascotGame })),
+)
 
 function IconCalendar() {
   return (
@@ -58,26 +66,52 @@ function IconProfile() {
 }
 
 export function BottomNav() {
+  const [showGame, setShowGame] = useState(false)
+  const lastTapRef = useRef(0)
+
+  const handleProfileTap = () => {
+    const now = Date.now()
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      lastTapRef.current = 0
+      setShowGame(true)
+    } else {
+      lastTapRef.current = now
+    }
+  }
+
   return (
-    <nav className={styles.nav}>
-      <div className={styles.menu}>
-        <NavLink to="/" end className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Главная">
-          <IconCalendar />
-        </NavLink>
+    <>
+      <nav className={styles.nav}>
+        <div className={styles.menu}>
+          <NavLink to="/" end className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Главная">
+            <IconCalendar />
+          </NavLink>
 
-        <NavLink to="/achievements" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Достижения">
-          <IconGift />
-        </NavLink>
+          <NavLink to="/achievements" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Достижения">
+            <IconGift />
+          </NavLink>
 
-        <NavLink to="/scan" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Сканировать">
-          <IconQr />
-        </NavLink>
+          <NavLink to="/scan" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Сканировать">
+            <IconQr />
+          </NavLink>
 
-        <NavLink to="/profile" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Профиль">
-          <IconProfile />
-        </NavLink>
-      </div>
-      <div className={styles.safeArea} />
-    </nav>
+          <NavLink
+            to="/profile"
+            className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`}
+            aria-label="Профиль"
+            onClick={handleProfileTap}
+          >
+            <IconProfile />
+          </NavLink>
+        </div>
+        <div className={styles.safeArea} />
+      </nav>
+
+      {showGame && (
+        <Suspense fallback={null}>
+          <MascotGame onClose={() => setShowGame(false)} />
+        </Suspense>
+      )}
+    </>
   )
 }
