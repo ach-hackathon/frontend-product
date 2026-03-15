@@ -19,6 +19,14 @@ function TaskHero({ fileId }: { fileId: string | null }) {
 }
 
 function CheckInResult({ result }: { result: CheckInEventResult }) {
+  if (!result.isSuccess) {
+    return (
+      <p className={styles.checkInError}>
+        {result.message ?? 'Не удалось выполнить задание. Попробуйте ещё раз.'}
+      </p>
+    )
+  }
+
   return (
     <div className={styles.resultCard}>
       <div className={styles.resultIcon}>✅</div>
@@ -71,7 +79,7 @@ export function TaskPage() {
   const task = data.data.entity
   const checkInResult = checkInData?.data?.entity
   const isAlreadyCompleted = task.isCompleted
-  const showScanButton = !isAlreadyCompleted && !checkInResult
+  const showScanButton = !isAlreadyCompleted && (!checkInResult || !checkInResult.isSuccess)
 
   const handleQrScan = (scannedText: string) => {
     setScannerOpen(false)

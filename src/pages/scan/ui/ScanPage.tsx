@@ -28,10 +28,16 @@ export function ScanPage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [parseError, setParseError] = useState(false)
+  const [businessError, setBusinessError] = useState<string | null>(null)
   const [scanKey, setScanKey] = useState(0)
 
   const { mutate: checkIn, reset, isPending, error: checkInError } = useCheckInEvent({
-    onSuccess: (_data, variables) => {
+    onSuccess: (data, variables) => {
+      const entity = data?.data?.entity
+      if (!entity?.isSuccess) {
+        setBusinessError(entity?.message ?? 'Не удалось выполнить задание')
+        return
+      }
       void Promise.all([
         queryClient.invalidateQueries({ queryKey: ['event-progress'] }),
         queryClient.invalidateQueries({ queryKey: ['event-leaderboard'] }),
@@ -44,6 +50,7 @@ export function ScanPage() {
 
   function handleScan(scannedText: string) {
     setParseError(false)
+    setBusinessError(null)
     const parsed = parseQrUrl(scannedText)
     if (parsed) {
       checkIn(parsed)
@@ -55,10 +62,11 @@ export function ScanPage() {
   function handleRescan() {
     reset()
     setParseError(false)
+    setBusinessError(null)
     setScanKey((k) => k + 1)
   }
 
-  const showScanner = !isPending && !parseError && !checkInError
+  const showScanner = !isPending && !parseError && !checkInError && !businessError
 
   return (
     <div className={`container ${styles.page}`}>
@@ -78,11 +86,13 @@ export function ScanPage() {
         </div>
       )}
 
-      {(parseError || checkInError) && (
+      {(parseError || checkInError || businessError) && (
         <div className={styles.errorCard}>
           <div className={styles.resultIcon}>❌</div>
           <p className={styles.resultTitle}>
-            {parseError ? 'QR-код не распознан' : 'Не удалось выполнить задание'}
+            {parseError
+              ? 'QR-код не распознан'
+              : businessError ?? 'Не удалось выполнить задание'}
           </p>
           <button className={styles.rescanButton} onClick={handleRescan}>
             Попробовать снова

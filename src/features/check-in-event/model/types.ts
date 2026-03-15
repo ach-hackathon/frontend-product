@@ -6,6 +6,8 @@ export interface CheckInEventDto {
 }
 
 export interface CheckInEventResult {
+  isSuccess: boolean
+  message: string | null
   pointsEarned: number
   completedAchievementIds: string[] | null
   giftIds: string[] | null
