@@ -48,7 +48,7 @@ export function ActionConfirmPage() {
             // не блокируем навигацию при ошибке
           }
         }
-        navigate('/profile', { replace: true })
+        navigate(campaignId ? `/event/${campaignId}` : '/profile', { replace: true })
       })
     },
   })
@@ -63,7 +63,7 @@ export function ActionConfirmPage() {
 
   function handleGiftClose() {
     setPendingGift(null)
-    navigate('/profile', { replace: true })
+    navigate(campaignId ? `/event/${campaignId}` : '/profile', { replace: true })
   }
 
   const hasError = !actionId || checkInError || businessError
@@ -98,8 +98,8 @@ export function ActionConfirmPage() {
           <div className={styles.stateIcon}>❌</div>
           <p className={styles.stateTitle}>{businessError ?? 'Не удалось выполнить задание'}</p>
           <p className={styles.stateHint}>Попробуйте отсканировать QR-код ещё раз</p>
-          <button className={styles.retryButton} onClick={() => navigate('/profile', { replace: true })}>
-            Перейти в профиль
+          <button className={styles.retryButton} onClick={() => navigate(campaignId ? `/event/${campaignId}` : '/', { replace: true })}>
+            {campaignId ? 'Перейти к компании' : 'На главную'}
           </button>
         </div>
       )}
