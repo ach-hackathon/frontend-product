@@ -36,7 +36,7 @@ export function AchievementsPage() {
             <ul className={styles.helpList}>
               <li className={styles.helpItem}>
                 <span className={styles.helpIcon}>🏆</span>
-                <span>Достижения — это награды за активное участие в событиях и выполнение заданий</span>
+                <span>Достижения - это награды за активное участие в событиях и выполнение заданий</span>
               </li>
               <li className={styles.helpItem}>
                 <span className={styles.helpIcon}>🎯</span>
