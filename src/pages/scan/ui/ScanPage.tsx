@@ -150,17 +150,7 @@ export function ScanPage() {
       </div>
 
       <div className={styles.scannerFrame}>
-        {status.step === 'scanning' && (
-          <>
-            <QrScannerView key={scanKey} onScan={handleScan} onError={handleCameraError} />
-            <div className={styles.scanZone} aria-hidden="true">
-              <span className={`${styles.corner} ${styles.cornerTL}`} />
-              <span className={`${styles.corner} ${styles.cornerTR}`} />
-              <span className={`${styles.corner} ${styles.cornerBL}`} />
-              <span className={`${styles.corner} ${styles.cornerBR}`} />
-            </div>
-          </>
-        )}
+        {status.step === 'scanning' && (<QrScannerView key={scanKey} onScan={handleScan} onError={handleCameraError} />)}
 
         {status.step === 'checking' && (
           <div className={styles.stateCard}>
