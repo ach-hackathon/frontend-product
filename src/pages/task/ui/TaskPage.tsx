@@ -10,7 +10,7 @@ import type { UserGiftApiModel } from '@/entities/gift'
 import { useImageUrl } from '@/shared/api/image'
 import styles from './TaskPage.module.css'
 
-const GIFT_CHECK_DELAY = 3000
+const GIFT_CHECK_DELAY = 1000
 
 function TaskHero({ fileId }: { fileId: string | null }) {
   const { data: imageUrl } = useImageUrl(fileId)

@@ -28,7 +28,7 @@ function parseQrUrl(scannedText: string): ParsedQr | null {
   return null
 }
 
-const GIFT_CHECK_DELAY = 3000
+const GIFT_CHECK_DELAY = 1000
 
 export function ScanPage() {
   const queryClient = useQueryClient()

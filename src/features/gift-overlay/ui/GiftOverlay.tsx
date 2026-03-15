@@ -31,7 +31,7 @@ export function GiftOverlay({ gift, onClose }: GiftOverlayProps) {
           <span className={styles.giftName}>{giftName}</span>
         </p>
 
-        <a href={giftUrl} className={styles.claimButton} target="_blank" rel="noopener noreferrer">
+        <a href={giftUrl} className={styles.claimButton} target="_blank" rel="noopener noreferrer" onClick={onClose}>
           🎁 Забрать подарок
         </a>
 
