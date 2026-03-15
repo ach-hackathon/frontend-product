@@ -79,24 +79,34 @@
 }
 
 .badgeTasks {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-  background-color: #42c8f5;
-  border: none;
-  padding: 0.55rem 1.4rem;
-  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.8rem;
+  gap: 0.4rem;
+  height: 2.4rem;
+  background: #18a9ed;
+  border-radius: 1.2rem;
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 2rem;
+  color: #ffffff;
   white-space: nowrap;
 }
 
 .badgePoints {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-  background-color: #4cd964;
-  border: none;
-  padding: 0.55rem 1.4rem;
-  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.8rem;
+  gap: 0.4rem;
+  height: 2.4rem;
+  background: #35c04c;
+  border-radius: 1.2rem;
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 2rem;
+  color: #ffffff;
   white-space: nowrap;
 }
 
