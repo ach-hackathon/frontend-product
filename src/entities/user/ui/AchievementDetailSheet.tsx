@@ -25,6 +25,12 @@ export function AchievementDetailSheet({ item, onClose }: AchievementDetailSheet
         {item.achievement.description && (
           <p className={styles.desc}>{item.achievement.description}</p>
         )}
+        <p className={styles.receivedAt}>
+          📅 Получено{' '}
+          {new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(
+            new Date(item.receivedAtUtc),
+          )}
+        </p>
         <button className={styles.closeBtn} onClick={onClose} type="button">
           Закрыть
         </button>

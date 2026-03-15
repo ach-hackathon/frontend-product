@@ -52,6 +52,16 @@
   line-height: 1.5;
 }
 
+.receivedAt {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 0.4rem 1.2rem;
+}
+
 .closeBtn {
   width: 100%;
   margin-top: var(--space-2);

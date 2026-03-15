@@ -75,14 +75,23 @@
 /* ─── Grid ───────────────────────────────────────────────────────────────── */
 
 .grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  align-content: flex-start;
-  padding: 0 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
   gap: 24px 15px;
+  padding: 0 12px;
+}
+
+@media (min-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
 
