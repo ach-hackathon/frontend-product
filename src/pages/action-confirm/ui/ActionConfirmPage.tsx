@@ -1,72 +1,58 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
-import { useCheckInEvent } from '@/features/check-in-event'
+import { useCheckInEvent, usePostCheckIn } from '@/features/check-in-event'
 import { GiftOverlay } from '@/features/gift-overlay'
-import { fetchUserGifts } from '@/entities/gift'
-import type { UserGiftApiModel } from '@/entities/gift'
 import styles from './ActionConfirmPage.module.css'
 
-const GIFT_CHECK_DELAY = 1000
+type PageStatus =
+  | { step: 'checking' }
+  | { step: 'error'; message: string }
 
 export function ActionConfirmPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
   const actionId = searchParams.get('action')
   const secret = searchParams.get('secret')
   const campaignId = searchParams.get('event')
 
-  const [businessError, setBusinessError] = useState<string | null>(null)
-  const [pendingGift, setPendingGift] = useState<UserGiftApiModel | null>(null)
+  const [status, setStatus] = useState<PageStatus>({ step: 'checking' })
   const calledRef = useRef(false)
 
-  const { mutate: checkIn, isPending, error: checkInError } = useCheckInEvent({
-    onSuccess: (data) => {
-      const entity = data?.data?.entity
-      if (!entity?.isSuccess) {
-        setBusinessError(entity?.message ?? 'Не удалось выполнить задание')
-        return
-      }
+  const { pendingGift, processCheckIn, closeGift } = usePostCheckIn()
+  const { mutateAsync: checkIn } = useCheckInEvent()
 
-      void Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['event-progress'] }),
-        queryClient.invalidateQueries({ queryKey: ['event-leaderboard'] }),
-        queryClient.invalidateQueries({ queryKey: ['event-task', actionId] }),
-      ]).then(async () => {
-        if (campaignId) {
-          await new Promise((r) => setTimeout(r, GIFT_CHECK_DELAY))
-          try {
-            const giftsRes = await fetchUserGifts(campaignId)
-            const gifts = giftsRes.data?.items
-            if (gifts && gifts.length > 0) {
-              setPendingGift(gifts[0] ?? null)
-              return
-            }
-          } catch {
-            // не блокируем навигацию при ошибке
-          }
-        }
-        navigate(campaignId ? `/event/${campaignId}` : '/profile', { replace: true })
-      })
-    },
-  })
+  const fallbackPath = campaignId ? `/event/${campaignId}` : '/profile'
 
   useEffect(() => {
-    if (calledRef.current) return
-    if (!actionId) return
-
+    if (calledRef.current || !actionId) return
     calledRef.current = true
-    checkIn({ campaignEventId: actionId, qrCode: secret ?? null })
-  }, [actionId, secret, checkIn])
+
+    void (async () => {
+      try {
+        const response = await checkIn({ campaignEventId: actionId, qrCode: secret ?? null })
+        const entity = response?.data?.entity
+
+        if (!entity?.isSuccess) {
+          setStatus({ step: 'error', message: entity?.message ?? 'Не удалось выполнить задание' })
+          return
+        }
+
+        const gift = await processCheckIn({ taskId: actionId, campaignId })
+
+        if (!gift) {
+          navigate(fallbackPath, { replace: true })
+        }
+      } catch {
+        setStatus({ step: 'error', message: 'Не удалось выполнить задание' })
+      }
+    })()
+  }, [actionId, secret, campaignId, checkIn, processCheckIn, navigate, fallbackPath])
 
   function handleGiftClose() {
-    setPendingGift(null)
-    navigate(campaignId ? `/event/${campaignId}` : '/profile', { replace: true })
+    closeGift()
+    navigate(fallbackPath, { replace: true })
   }
-
-  const hasError = !actionId || checkInError || businessError
 
   if (!actionId) {
     return (
@@ -85,7 +71,7 @@ export function ActionConfirmPage() {
 
   return (
     <div className={styles.page}>
-      {isPending && !hasError && (
+      {status.step === 'checking' && (
         <div className={styles.stateCard}>
           <div className={styles.spinner} />
           <p className={styles.stateTitle}>Выполняем действие...</p>
@@ -93,13 +79,13 @@ export function ActionConfirmPage() {
         </div>
       )}
 
-      {(checkInError || businessError) && (
+      {status.step === 'error' && (
         <div className={styles.stateCard}>
           <div className={styles.stateIcon}>❌</div>
-          <p className={styles.stateTitle}>{businessError ?? 'Не удалось выполнить задание'}</p>
+          <p className={styles.stateTitle}>{status.message}</p>
           <p className={styles.stateHint}>Попробуйте отсканировать QR-код ещё раз</p>
-          <button className={styles.retryButton} onClick={() => navigate(campaignId ? `/event/${campaignId}` : '/', { replace: true })}>
-            {campaignId ? 'Перейти к компании' : 'На главную'}
+          <button className={styles.retryButton} onClick={() => navigate(fallbackPath, { replace: true })}>
+            {campaignId ? 'К событию' : 'На главную'}
           </button>
         </div>
       )}

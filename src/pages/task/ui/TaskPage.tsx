@@ -1,16 +1,11 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
 import { useEventTaskById } from '@/entities/event'
-import { useCheckInEvent, QrScannerModal } from '@/features/check-in-event'
+import { useCheckInEvent, usePostCheckIn, QrScannerModal } from '@/features/check-in-event'
 import type { CheckInEventResult } from '@/features/check-in-event'
 import { GiftOverlay } from '@/features/gift-overlay'
-import { fetchUserGifts } from '@/entities/gift'
-import type { UserGiftApiModel } from '@/entities/gift'
 import { useImageUrl } from '@/shared/api/image'
 import styles from './TaskPage.module.css'
-
-const GIFT_CHECK_DELAY = 1000
 
 function TaskHero({ fileId }: { fileId: string | null }) {
   const { data: imageUrl } = useImageUrl(fileId)
@@ -49,37 +44,14 @@ function CheckInResult({ result }: { result: CheckInEventResult }) {
 export function TaskPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const { data, isLoading, isError } = useEventTaskById(id ?? '')
-  const [pendingGift, setPendingGift] = useState<UserGiftApiModel | null>(null)
 
-  const { mutate: checkIn, isPending, data: checkInData, error: checkInError } = useCheckInEvent({
-    onSuccess: (_response) => {
-      void queryClient.invalidateQueries({ queryKey: ['event-progress'] })
-      void queryClient.invalidateQueries({ queryKey: ['event-task', id] })
-      void queryClient.invalidateQueries({ queryKey: ['event-leaderboard'] })
-
-      const entity = _response?.data?.entity
-      if (!entity?.isSuccess) return
-
-      const campaignId = data?.data?.entity?.campaignId
-      if (!campaignId) return
-
-      void (async () => {
-        await new Promise((r) => setTimeout(r, GIFT_CHECK_DELAY))
-        try {
-          const giftsRes = await fetchUserGifts(campaignId)
-          const gifts = giftsRes.data?.items
-          if (gifts && gifts.length > 0) {
-            setPendingGift(gifts[0] ?? null)
-          }
-        } catch {
-          // не блокируем UX при ошибке
-        }
-      })()
-    },
-  })
   const [scannerOpen, setScannerOpen] = useState(false)
+  const [checkInResult, setCheckInResult] = useState<CheckInEventResult | null>(null)
+  const [checkInError, setCheckInError] = useState<string | null>(null)
+
+  const { pendingGift, processCheckIn, closeGift } = usePostCheckIn()
+  const { mutateAsync: checkIn, isPending } = useCheckInEvent()
 
   if (isLoading) {
     return (
@@ -103,20 +75,35 @@ export function TaskPage() {
   }
 
   const task = data.data.entity
-  const checkInResult = checkInData?.data?.entity
   const isAlreadyCompleted = task.isCompleted
-  const showScanButton = !isAlreadyCompleted && (!checkInResult || !checkInResult.isSuccess)
+  const isSuccess = checkInResult?.isSuccess === true
+  const showScanButton = !isAlreadyCompleted && !isSuccess && !isPending
 
-  const handleQrScan = (scannedText: string) => {
+  const handleQrScan = async (scannedText: string) => {
     setScannerOpen(false)
+    setCheckInError(null)
+
     let qrCode = scannedText
     try {
       const secret = new URL(scannedText).searchParams.get('secret')
       if (secret) qrCode = secret
     } catch {
-      // не URL — передаём как есть
+      // not a URL — use as-is
     }
-    checkIn({ campaignEventId: task.id, qrCode })
+
+    try {
+      const response = await checkIn({ campaignEventId: task.id, qrCode })
+      const entity = response?.data?.entity
+      if (entity) {
+        setCheckInResult(entity)
+      }
+      if (entity?.isSuccess) {
+        const campaignId = task.campaignId as string | undefined
+        await processCheckIn({ taskId: task.id, campaignId: campaignId ?? null })
+      }
+    } catch {
+      setCheckInError('Не удалось выполнить задание. Попробуйте ещё раз.')
+    }
   }
 
   return (
@@ -136,7 +123,6 @@ export function TaskPage() {
       </div>
 
       <div className={`container ${styles.content}`}>
-        {/* Статус выполнения */}
         {isAlreadyCompleted && !checkInResult && (
           <div className={styles.resultCard}>
             <div className={styles.resultIcon}>✅</div>
@@ -146,27 +132,28 @@ export function TaskPage() {
           </div>
         )}
 
-        {/* Description */}
         {task.description && (
           <p className={styles.description}>{task.description}</p>
         )}
 
-        {/* Check-in result */}
         {checkInResult && <CheckInResult result={checkInResult} />}
 
-        {/* Check-in error */}
         {checkInError && (
-          <p className={styles.checkInError}>Не удалось выполнить задание. Попробуйте ещё раз.</p>
+          <p className={styles.checkInError}>{checkInError}</p>
         )}
 
-        {/* QR scan action */}
         {showScanButton && (
           <button
             className={styles.scanButton}
             onClick={() => setScannerOpen(true)}
-            disabled={isPending}
           >
-            {isPending ? 'Проверяем...' : '📷 Сканировать QR-код'}
+            📷 Сканировать QR-код
+          </button>
+        )}
+
+        {isPending && (
+          <button className={styles.scanButton} disabled>
+            Проверяем...
           </button>
         )}
       </div>
@@ -175,7 +162,7 @@ export function TaskPage() {
         <QrScannerModal onScan={handleQrScan} onClose={() => setScannerOpen(false)} />
       )}
 
-      {pendingGift && <GiftOverlay gift={pendingGift} onClose={() => setPendingGift(null)} />}
+      {pendingGift && <GiftOverlay gift={pendingGift} onClose={closeGift} />}
     </div>
   )
 }

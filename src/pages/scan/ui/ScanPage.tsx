@@ -1,10 +1,8 @@
-import { useRef, useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
-import { useCheckInEvent, QrScannerView } from '@/features/check-in-event'
+import { useCheckInEvent, usePostCheckIn, QrScannerView } from '@/features/check-in-event'
+import type { CheckInEventResult } from '@/features/check-in-event'
 import { GiftOverlay } from '@/features/gift-overlay'
-import { fetchUserGifts } from '@/entities/gift'
-import type { UserGiftApiModel } from '@/entities/gift'
 import styles from './ScanPage.module.css'
 
 interface ParsedQr {
@@ -23,12 +21,18 @@ function parseQrUrl(scannedText: string): ParsedQr | null {
       return { campaignEventId: actionId, campaignId: eventId, qrCode: secret }
     }
   } catch {
-    // не URL
+    // not a URL
   }
   return null
 }
 
-const GIFT_CHECK_DELAY = 1000
+type ScanStatus =
+  | { step: 'scanning' }
+  | { step: 'checking' }
+  | { step: 'success'; result: CheckInEventResult; taskPath: string }
+  | { step: 'error'; message: string }
+
+const AUTO_NAVIGATE_DELAY = 1500
 
 function HelpModal({ onClose }: { onClose: () => void }) {
   return (
@@ -63,80 +67,70 @@ function HelpModal({ onClose }: { onClose: () => void }) {
 }
 
 export function ScanPage() {
-  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [showHelp, setShowHelp] = useState(false)
-  const [parseError, setParseError] = useState(false)
-  const [businessError, setBusinessError] = useState<string | null>(null)
+  const [status, setStatus] = useState<ScanStatus>({ step: 'scanning' })
   const [scanKey, setScanKey] = useState(0)
-  const [pendingGift, setPendingGift] = useState<UserGiftApiModel | null>(null)
-  const [pendingNavigate, setPendingNavigate] = useState<string | null>(null)
-  const campaignIdRef = useRef<string | null>(null)
+
+  const { pendingGift, processCheckIn, closeGift } = usePostCheckIn()
+  const { mutateAsync: checkIn } = useCheckInEvent()
 
   const handleHelpClose = useCallback(() => setShowHelp(false), [])
 
-  const { mutate: checkIn, reset, isPending, error: checkInError } = useCheckInEvent({
-    onSuccess: (data, variables) => {
-      const entity = data?.data?.entity
+  function handleCameraError(message: string) {
+    setStatus({ step: 'error', message })
+  }
+
+  async function handleScan(scannedText: string) {
+    const parsed = parseQrUrl(scannedText)
+    if (!parsed) {
+      setStatus({ step: 'error', message: 'QR-код не распознан. Убедитесь, что это QR-код задания.' })
+      return
+    }
+
+    setStatus({ step: 'checking' })
+
+    try {
+      const response = await checkIn({
+        campaignEventId: parsed.campaignEventId,
+        qrCode: parsed.qrCode,
+      })
+
+      const entity = response?.data?.entity
       if (!entity?.isSuccess) {
-        setBusinessError(entity?.message ?? 'Не удалось выполнить задание')
+        setStatus({ step: 'error', message: entity?.message ?? 'Не удалось выполнить задание' })
         return
       }
 
-      const campaignId = campaignIdRef.current
-      const taskPath = `/task/${variables.campaignEventId}`
+      const taskPath = `/task/${parsed.campaignEventId}`
+      setStatus({ step: 'success', result: entity, taskPath })
 
-      void Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['event-progress'] }),
-        queryClient.invalidateQueries({ queryKey: ['event-leaderboard'] }),
-        queryClient.invalidateQueries({ queryKey: ['event-task', variables.campaignEventId] }),
-      ]).then(async () => {
-        if (campaignId) {
-          await new Promise((r) => setTimeout(r, GIFT_CHECK_DELAY))
-          try {
-            const giftsRes = await fetchUserGifts(campaignId)
-            const gifts = giftsRes.data?.items
-            if (gifts && gifts.length > 0) {
-              setPendingNavigate(taskPath)
-              setPendingGift(gifts[0] ?? null)
-              return
-            }
-          } catch {
-            // не блокируем навигацию при ошибке
-          }
-        }
-        navigate(taskPath, { replace: true })
+      const gift = await processCheckIn({
+        taskId: parsed.campaignEventId,
+        campaignId: parsed.campaignId,
       })
-    },
-  })
 
-  function handleScan(scannedText: string) {
-    setParseError(false)
-    setBusinessError(null)
-    const parsed = parseQrUrl(scannedText)
-    if (parsed) {
-      campaignIdRef.current = parsed.campaignId
-      checkIn({ campaignEventId: parsed.campaignEventId, qrCode: parsed.qrCode })
-    } else {
-      setParseError(true)
+      if (!gift) {
+        setTimeout(() => {
+          navigate(taskPath, { replace: true })
+        }, AUTO_NAVIGATE_DELAY)
+      }
+    } catch {
+      setStatus({ step: 'error', message: 'Не удалось выполнить задание. Попробуйте ещё раз.' })
     }
   }
 
   function handleRescan() {
-    reset()
-    setParseError(false)
-    setBusinessError(null)
+    setStatus({ step: 'scanning' })
     setScanKey((k) => k + 1)
   }
 
   function handleGiftClose() {
-    setPendingGift(null)
-    if (pendingNavigate) {
-      navigate(pendingNavigate, { replace: true })
+    closeGift()
+    if (status.step === 'success') {
+      navigate(status.taskPath, { replace: true })
     }
   }
-
-  const showScanner = !isPending && !parseError && !checkInError && !businessError
 
   return (
     <div className={styles.page}>
@@ -155,46 +149,47 @@ export function ScanPage() {
         </button>
       </div>
 
-      {showScanner && (
-        <div className={styles.scannerFrame}>
-          <QrScannerView key={scanKey} onScan={handleScan} />
-          <div className={styles.scanZone} aria-hidden="true">
-            <span className={`${styles.corner} ${styles.cornerTL}`} />
-            <span className={`${styles.corner} ${styles.cornerTR}`} />
-            <span className={`${styles.corner} ${styles.cornerBL}`} />
-            <span className={`${styles.corner} ${styles.cornerBR}`} />
-          </div>
-        </div>
-      )}
+      <div className={styles.scannerFrame}>
+        {status.step === 'scanning' && (
+          <>
+            <QrScannerView key={scanKey} onScan={handleScan} onError={handleCameraError} />
+            <div className={styles.scanZone} aria-hidden="true">
+              <span className={`${styles.corner} ${styles.cornerTL}`} />
+              <span className={`${styles.corner} ${styles.cornerTR}`} />
+              <span className={`${styles.corner} ${styles.cornerBL}`} />
+              <span className={`${styles.corner} ${styles.cornerBR}`} />
+            </div>
+          </>
+        )}
 
-      {isPending && (
-        <div className={styles.scannerFrame}>
+        {status.step === 'checking' && (
           <div className={styles.stateCard}>
             <div className={styles.spinner} />
             <p className={styles.stateTitle}>Проверяем QR-код...</p>
             <p className={styles.stateHint}>Пожалуйста, подождите</p>
           </div>
-        </div>
-      )}
+        )}
 
-      {(parseError || checkInError || businessError) && (
-        <div className={styles.scannerFrame}>
+        {status.step === 'success' && (
+          <div className={styles.stateCard}>
+            <div className={styles.stateIcon}>✅</div>
+            <p className={styles.stateTitle}>Задание выполнено!</p>
+            {status.result.campaignCompleted && (
+              <p className={styles.stateHint}>🎉 Событие завершено!</p>
+            )}
+          </div>
+        )}
+
+        {status.step === 'error' && (
           <div className={styles.stateCard}>
             <div className={styles.stateIcon}>❌</div>
-            <p className={styles.stateTitle}>
-              {parseError ? 'QR-код не распознан' : businessError ?? 'Не удалось выполнить задание'}
-            </p>
-            <p className={styles.stateHint}>
-              {parseError
-                ? 'Убедитесь, что это QR-код задания'
-                : 'Попробуйте отсканировать ещё раз'}
-            </p>
+            <p className={styles.stateTitle}>{status.message}</p>
             <button className={styles.retryButton} onClick={handleRescan}>
               Попробовать снова
             </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {pendingGift && <GiftOverlay gift={pendingGift} onClose={handleGiftClose} />}
       {showHelp && <HelpModal onClose={handleHelpClose} />}

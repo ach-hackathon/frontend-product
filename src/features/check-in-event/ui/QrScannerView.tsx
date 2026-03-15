@@ -4,19 +4,22 @@ import styles from './QrScannerView.module.css'
 
 interface QrScannerViewProps {
   onScan: (code: string) => void
+  onError?: (message: string) => void
 }
 
 const SCANNER_ID = 'qr-scanner-view-container'
 
-export function QrScannerView({ onScan }: QrScannerViewProps) {
+export function QrScannerView({ onScan, onError }: QrScannerViewProps) {
   const scannerRef = useRef<Html5Qrcode | null>(null)
   const scannedRef = useRef(false)
   const onScanRef = useRef(onScan)
+  const onErrorRef = useRef(onError)
   const [isReady, setIsReady] = useState(false)
   const [cameraError, setCameraError] = useState<string | null>(null)
 
   useLayoutEffect(() => {
     onScanRef.current = onScan
+    onErrorRef.current = onError
   })
 
   useEffect(() => {
@@ -40,11 +43,11 @@ export function QrScannerView({ onScan }: QrScannerViewProps) {
       .then(() => setIsReady(true))
       .catch((err: unknown) => {
         const msg = err instanceof Error ? err.message : String(err)
-        setCameraError(
-          msg.toLowerCase().includes('permission')
-            ? 'Нет доступа к камере. Разрешите доступ в настройках браузера.'
-            : 'Не удалось запустить камеру. Попробуйте ещё раз.',
-        )
+        const userMessage = msg.toLowerCase().includes('permission')
+          ? 'Нет доступа к камере. Разрешите доступ в настройках браузера.'
+          : 'Не удалось запустить камеру. Попробуйте ещё раз.'
+        setCameraError(userMessage)
+        onErrorRef.current?.(userMessage)
       })
 
     return () => {
