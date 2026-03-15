@@ -1,10 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { EventCard, useEvents } from '@/entities/event'
+import { BottomSheet } from '@/shared/ui/BottomSheet'
 import styles from './HomePage.module.css'
 
 export function HomePage() {
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useEvents()
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const [showHelp, setShowHelp] = useState(false)
 
   useEffect(() => {
     const el = sentinelRef.current
@@ -50,13 +52,39 @@ export function HomePage() {
     <div className={`container ${styles.page}`}>
       <div className={styles.pageHeader}>
         <h1 className={styles.title}>События</h1>
-        <button className={styles.helpButton} aria-label="Помощь" type="button">
+        <button className={styles.helpButton} aria-label="Помощь" type="button" onClick={() => setShowHelp(true)}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M6 6C6 4.89543 6.89543 4 8 4C9.10457 4 10 4.89543 10 6C10 6.82843 9.49954 7.54167 8.77735 7.8517C8.31291 8.05156 8 8.5 8 9V9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             <circle cx="8" cy="11.5" r="0.75" fill="currentColor" />
           </svg>
         </button>
       </div>
+
+      {showHelp && (
+        <BottomSheet onClose={() => setShowHelp(false)}>
+          <div className={styles.helpContent}>
+            <h2 className={styles.helpTitle}>Что такое события?</h2>
+            <ul className={styles.helpList}>
+              <li className={styles.helpItem}>
+                <span className={styles.helpIcon}>🗺️</span>
+                <span>События - это активности на мероприятии, в которых вы можете участвовать</span>
+              </li>
+              <li className={styles.helpItem}>
+                <span className={styles.helpIcon}>🎯</span>
+                <span>Каждое событие содержит задания - выполняйте их, сканируя QR-коды на месте</span>
+              </li>
+              <li className={styles.helpItem}>
+                <span className={styles.helpIcon}>⚡</span>
+                <span>За выполнение заданий начисляются XP-очки - чем больше, тем выше в рейтинге</span>
+              </li>
+              <li className={styles.helpItem}>
+                <span className={styles.helpIcon}>🎁</span>
+                <span>Некоторые события дают призы - следите за зелёным значком XP на карточке</span>
+              </li>
+            </ul>
+          </div>
+        </BottomSheet>
+      )}
 
       {events.length === 0 ? (
         <p className={styles.empty}>Событий пока нет.</p>
