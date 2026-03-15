@@ -2,11 +2,15 @@ import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useEventProgress, useEventLeaderboard, EventTaskCompletionCondition, EventTaskType } from '@/entities/event'
 import type { EventProgressTaskApiModel, EventLeaderboardEntryApiModel } from '@/entities/event'
+import { useCampaignGifts, UserGiftStatus } from '@/entities/gift'
+import type { UserGiftApiModel } from '@/entities/gift'
 import { useUser } from '@/entities/user'
 import { useImageUrl } from '@/shared/api/image'
 import { Tabs } from '@/shared/ui/Tabs'
 import type { TabItem } from '@/shared/ui/Tabs'
 import styles from './EventPage.module.css'
+
+const GIFT_PAGE_URL = import.meta.env.VITE_GIFT_PAGE_URL as string
 
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }).format(
@@ -67,6 +71,76 @@ function LeaderboardRow({
       <span className={styles.lbName}>{name}{isCurrentUser && ' (вы)'}</span>
       <span className={styles.lbPoints}>⚡ {entry.points}</span>
     </div>
+  )
+}
+
+function GiftCard({ gift, userId }: { gift: UserGiftApiModel; userId: string }) {
+  const giftName = gift.gift?.name ?? 'Подарок'
+  const isDone = gift.status === UserGiftStatus.Done
+  const isPending = gift.status === UserGiftStatus.Pending
+  const giftUrl = `${GIFT_PAGE_URL}/?userId=${userId}&giftId=${gift.id}`
+
+  return (
+    <div className={`${styles.giftCard} ${isDone ? styles.giftCardDone : ''}`}>
+      <div className={styles.giftIcon}>{isDone ? '✅' : '🎁'}</div>
+      <div className={styles.giftInfo}>
+        <span className={styles.giftName}>{giftName}</span>
+        {isDone && <span className={styles.giftStatus}>Подарок выдан</span>}
+        {isPending && (
+          <a
+            href={giftUrl}
+            className={styles.giftClaimBtn}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            🎁 ЗАБРАТЬ ПОДАРОК
+          </a>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function GiftsSection({ campaignId, userId }: { campaignId: string; userId: string }) {
+  const { data, isLoading } = useCampaignGifts(campaignId)
+  const gifts = data?.data?.items ?? []
+
+  if (isLoading) {
+    return (
+      <div className={styles.giftsSection}>
+        <h3 className={styles.giftsSectionTitle}>🎁 Подарки</h3>
+        <div className={styles.skeletonTask} />
+      </div>
+    )
+  }
+
+  if (gifts.length === 0) return null
+
+  const available = gifts.filter((g) => g.status === UserGiftStatus.Pending)
+  const received = gifts.filter((g) => g.status === UserGiftStatus.Done)
+
+  return (
+    <section className={styles.giftsSection}>
+      <h3 className={styles.giftsSectionTitle}>🎁 Подарки</h3>
+
+      {available.length > 0 && (
+        <div className={styles.giftsGroup}>
+          <span className={styles.giftsGroupLabel}>Доступные</span>
+          {available.map((g) => (
+            <GiftCard key={g.id} gift={g} userId={userId} />
+          ))}
+        </div>
+      )}
+
+      {received.length > 0 && (
+        <div className={styles.giftsGroup}>
+          <span className={styles.giftsGroupLabel}>Полученные</span>
+          {received.map((g) => (
+            <GiftCard key={g.id} gift={g} userId={userId} />
+          ))}
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -160,6 +234,9 @@ export function EventPage() {
             </div>
           </div>
         )}
+
+        {/* Gifts */}
+        <GiftsSection campaignId={id ?? ''} userId={user.id} />
 
         {/* Tabs */}
         <Tabs tabs={EVENT_TABS} active={activeTab} onChange={setActiveTab} />

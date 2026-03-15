@@ -117,7 +117,7 @@ export function ProfilePage() {
       <div className={styles.stats}>
         <div className={styles.statCard}>
           <span className={styles.statIcon}>💎</span>
-          <span className={styles.statValue}>{user.balance}</span>
+          <span className={styles.statValue}>{user.userPoints?.points ?? 0}</span>
           <span className={styles.statLabel}>Баланс</span>
         </div>
         {user.userPoints && (
@@ -131,11 +131,6 @@ export function ProfilePage() {
               <span className={styles.statIcon}>⚡</span>
               <span className={styles.statValue}>{user.userPoints.experiencePoints}</span>
               <span className={styles.statLabel}>Опыт (XP)</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statIcon}>🎯</span>
-              <span className={styles.statValue}>{user.userPoints.points}</span>
-              <span className={styles.statLabel}>Очки</span>
             </div>
           </>
         )}
