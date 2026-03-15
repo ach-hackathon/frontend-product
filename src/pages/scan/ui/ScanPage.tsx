@@ -1,11 +1,15 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCheckInEvent, QrScannerView } from '@/features/check-in-event'
+import { GiftOverlay } from '@/features/gift-overlay'
+import { fetchUserGifts } from '@/entities/gift'
+import type { UserGiftApiModel } from '@/entities/gift'
 import styles from './ScanPage.module.css'
 
 interface ParsedQr {
   campaignEventId: string
+  campaignId: string | null
   qrCode: string | null
 }
 
@@ -16,7 +20,7 @@ function parseQrUrl(scannedText: string): ParsedQr | null {
     const eventId = url.searchParams.get('event')
     const secret = url.searchParams.get('secret')
     if (actionId && eventId) {
-      return { campaignEventId: actionId, qrCode: secret }
+      return { campaignEventId: actionId, campaignId: eventId, qrCode: secret }
     }
   } catch {
     // не URL
@@ -24,12 +28,17 @@ function parseQrUrl(scannedText: string): ParsedQr | null {
   return null
 }
 
+const GIFT_CHECK_DELAY = 3000
+
 export function ScanPage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [parseError, setParseError] = useState(false)
   const [businessError, setBusinessError] = useState<string | null>(null)
   const [scanKey, setScanKey] = useState(0)
+  const [pendingGift, setPendingGift] = useState<UserGiftApiModel | null>(null)
+  const [pendingNavigate, setPendingNavigate] = useState<string | null>(null)
+  const campaignIdRef = useRef<string | null>(null)
 
   const { mutate: checkIn, reset, isPending, error: checkInError } = useCheckInEvent({
     onSuccess: (data, variables) => {
@@ -38,12 +47,30 @@ export function ScanPage() {
         setBusinessError(entity?.message ?? 'Не удалось выполнить задание')
         return
       }
+
+      const campaignId = campaignIdRef.current
+      const taskPath = `/task/${variables.campaignEventId}`
+
       void Promise.all([
         queryClient.invalidateQueries({ queryKey: ['event-progress'] }),
         queryClient.invalidateQueries({ queryKey: ['event-leaderboard'] }),
         queryClient.invalidateQueries({ queryKey: ['event-task', variables.campaignEventId] }),
-      ]).then(() => {
-        navigate(`/task/${variables.campaignEventId}`, { replace: true })
+      ]).then(async () => {
+        if (campaignId) {
+          await new Promise((r) => setTimeout(r, GIFT_CHECK_DELAY))
+          try {
+            const giftsRes = await fetchUserGifts(campaignId)
+            const gifts = giftsRes.data?.items
+            if (gifts && gifts.length > 0) {
+              setPendingNavigate(taskPath)
+              setPendingGift(gifts[0] ?? null)
+              return
+            }
+          } catch {
+            // не блокируем навигацию при ошибке
+          }
+        }
+        navigate(taskPath, { replace: true })
       })
     },
   })
@@ -53,7 +80,8 @@ export function ScanPage() {
     setBusinessError(null)
     const parsed = parseQrUrl(scannedText)
     if (parsed) {
-      checkIn(parsed)
+      campaignIdRef.current = parsed.campaignId
+      checkIn({ campaignEventId: parsed.campaignEventId, qrCode: parsed.qrCode })
     } else {
       setParseError(true)
     }
@@ -64,6 +92,13 @@ export function ScanPage() {
     setParseError(false)
     setBusinessError(null)
     setScanKey((k) => k + 1)
+  }
+
+  function handleGiftClose() {
+    setPendingGift(null)
+    if (pendingNavigate) {
+      navigate(pendingNavigate, { replace: true })
+    }
   }
 
   const showScanner = !isPending && !parseError && !checkInError && !businessError
@@ -112,6 +147,8 @@ export function ScanPage() {
           </button>
         </div>
       )}
+
+      {pendingGift && <GiftOverlay gift={pendingGift} onClose={handleGiftClose} />}
     </div>
   )
 }

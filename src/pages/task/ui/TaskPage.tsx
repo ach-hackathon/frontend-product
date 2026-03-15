@@ -4,8 +4,13 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useEventTaskById } from '@/entities/event'
 import { useCheckInEvent, QrScannerModal } from '@/features/check-in-event'
 import type { CheckInEventResult } from '@/features/check-in-event'
+import { GiftOverlay } from '@/features/gift-overlay'
+import { fetchUserGifts } from '@/entities/gift'
+import type { UserGiftApiModel } from '@/entities/gift'
 import { useImageUrl } from '@/shared/api/image'
 import styles from './TaskPage.module.css'
+
+const GIFT_CHECK_DELAY = 3000
 
 function TaskHero({ fileId }: { fileId: string | null }) {
   const { data: imageUrl } = useImageUrl(fileId)
@@ -46,11 +51,32 @@ export function TaskPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { data, isLoading, isError } = useEventTaskById(id ?? '')
+  const [pendingGift, setPendingGift] = useState<UserGiftApiModel | null>(null)
+
   const { mutate: checkIn, isPending, data: checkInData, error: checkInError } = useCheckInEvent({
-    onSuccess: () => {
+    onSuccess: (_response) => {
       void queryClient.invalidateQueries({ queryKey: ['event-progress'] })
       void queryClient.invalidateQueries({ queryKey: ['event-task', id] })
       void queryClient.invalidateQueries({ queryKey: ['event-leaderboard'] })
+
+      const entity = _response?.data?.entity
+      if (!entity?.isSuccess) return
+
+      const campaignId = data?.data?.entity?.campaignId
+      if (!campaignId) return
+
+      void (async () => {
+        await new Promise((r) => setTimeout(r, GIFT_CHECK_DELAY))
+        try {
+          const giftsRes = await fetchUserGifts(campaignId)
+          const gifts = giftsRes.data?.items
+          if (gifts && gifts.length > 0) {
+            setPendingGift(gifts[0] ?? null)
+          }
+        } catch {
+          // не блокируем UX при ошибке
+        }
+      })()
     },
   })
   const [scannerOpen, setScannerOpen] = useState(false)
@@ -148,6 +174,8 @@ export function TaskPage() {
       {scannerOpen && (
         <QrScannerModal onScan={handleQrScan} onClose={() => setScannerOpen(false)} />
       )}
+
+      {pendingGift && <GiftOverlay gift={pendingGift} onClose={() => setPendingGift(null)} />}
     </div>
   )
 }
