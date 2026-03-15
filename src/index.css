@@ -123,6 +123,12 @@ a {
   /* Red — error */
   --color-red: #ff4b4b;
   --color-red-shadow: #ea2b2b;
+
+  /* Orange — accent */
+  --color-orange: #ff8c00;
+  --color-orange-hover: #e67e00;
+  --color-orange-shadow: #d47400;
+  --color-orange-text: #ffffff;
 }
 
 body {

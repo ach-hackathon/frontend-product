@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { Panel } from '@/shared/ui/Panel'
 import { getToken, setToken } from '@/shared/lib/token'
 import { authApi } from '@/features/auth'
+import mascotImg from './mascot.png'
 import styles from './LoginPage.module.css'
 
 interface LoginFormValues {
@@ -43,45 +43,51 @@ export function LoginPage() {
         navigate('/code/sent', { state: { email, message } })
       }
     } catch {
-      setError('root', { message: 'Something went wrong. Please try again.' })
+      setError('root', { message: 'Что-то пошло не так. Попробуйте ещё раз.' })
     }
   }
 
   return (
     <div className={clsx(styles.page, leaving && styles.pageLeaving)}>
-      <Panel className={styles.panel}>
-        <h1 className={styles.title}>Sign in</h1>
+      <img className={styles.mascot} src={mascotImg} alt="EventiGo маскот" />
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              className={clsx(styles.input, errors.email && styles.inputError)}
-              type="email"
-              placeholder="you@example.com"
-              autoComplete="email"
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Enter a valid email address',
-                },
-              })}
-            />
-            {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
-          </div>
+      <h1 className={styles.title}>
+        Добро пожаловать
+        <br />
+        в EventiGo!
+      </h1>
 
-          {errors.root && <span className={styles.errorMessage}>{errors.root.message}</span>}
+      <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div className={styles.field}>
+          <input
+            id="email"
+            className={clsx(styles.input, errors.email && styles.inputError)}
+            type="email"
+            placeholder=" "
+            autoComplete="email"
+            {...register('email', {
+              required: 'Введите email',
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: 'Введите корректный email',
+              },
+            })}
+          />
+          <label className={styles.label} htmlFor="email">
+            Электронная почта
+          </label>
+          {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
+        </div>
 
-          <button className={styles.button} type="submit" disabled={isPending}>
-            {isPending && <span className={styles.spinner} />}
-            {isPending ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
-      </Panel>
+        {errors.root && <span className={styles.errorMessage}>{errors.root.message}</span>}
+
+        <button className={styles.button} type="submit" disabled={isPending}>
+          {isPending && <span className={styles.spinner} />}
+          {isPending ? 'Входим...' : 'Войти'}
+        </button>
+      </form>
+
+      <footer className={styles.footer}>Design by Полуостров Эйнштейна</footer>
     </div>
   )
 }
