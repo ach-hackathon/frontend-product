@@ -65,7 +65,7 @@ function GiftCard({ item, userId }: { item: UserGiftApiModel; userId: string }) 
         )}
         {isPending && (
           <a
-            href={`${GIFT_PAGE_URL}/?userId=${userId}&giftId=${item.giftId}`}
+            href={`${GIFT_PAGE_URL}/?userId=${userId}&giftId=${item.gift?.id ?? item.giftId}`}
             className={styles.giftClaimButton}
             target="_blank"
             rel="noopener noreferrer"

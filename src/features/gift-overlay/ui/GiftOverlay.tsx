@@ -9,7 +9,7 @@ interface GiftOverlayProps {
 }
 
 export function GiftOverlay({ gift, onClose }: GiftOverlayProps) {
-  const giftUrl = `${GIFT_PAGE_URL}/?userId=${gift.userId}&giftId=${gift.id}`
+  const giftUrl = `${GIFT_PAGE_URL}/?userId=${gift.userId}&giftId=${gift.gift?.id ?? gift.giftId}`
   const giftName = gift.gift?.name ?? 'Подарок'
 
   return (

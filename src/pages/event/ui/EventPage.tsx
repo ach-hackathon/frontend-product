@@ -78,7 +78,7 @@ function GiftCard({ gift, userId }: { gift: UserGiftApiModel; userId: string }) 
   const giftName = gift.gift?.name ?? 'Подарок'
   const isDone = gift.status === UserGiftStatus.Done
   const isPending = gift.status === UserGiftStatus.Pending
-  const giftUrl = `${GIFT_PAGE_URL}/?userId=${userId}&giftId=${gift.id}`
+  const giftUrl = `${GIFT_PAGE_URL}/?userId=${userId}&giftId=${gift.gift?.id ?? gift.giftId}`
 
   return (
     <div className={`${styles.giftCard} ${isDone ? styles.giftCardDone : ''}`}>
