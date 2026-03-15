@@ -21,7 +21,7 @@
   position: absolute;
   inset: 0;
   background-color: var(--color-blue);
-  background-image: linear-gradient(135deg, #1cb0f6 0%, #58cc02 100%);
+  background-image: linear-gradient(135deg, #1cb0f6 0%, #fd8509 100%);
   background-size: cover;
   background-position: center;
 }
