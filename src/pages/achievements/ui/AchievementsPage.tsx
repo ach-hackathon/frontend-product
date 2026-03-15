@@ -1,45 +1,21 @@
 import { useState } from 'react'
-import { useWebHaptics } from 'web-haptics/react'
-import { useUser, useUserAchievements } from '@/entities/user'
+import { useUser, useUserAchievements, AchievementBadge, LockedAchievementBadge, AchievementDetailSheet } from '@/entities/user'
 import type { UserAchievementApiModel } from '@/entities/user'
-import { useImageUrl } from '@/shared/api/image'
 import { BottomSheet } from '@/shared/ui/BottomSheet'
 import styles from './AchievementsPage.module.css'
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(
-    new Date(iso),
-  )
-}
+const TOTAL_SLOTS = 15
 
-function AchievementCard({ item }: { item: UserAchievementApiModel }) {
-  const { data: imageUrl } = useImageUrl(item.achievement.fileId)
-  const { trigger } = useWebHaptics()
-
-  return (
-    <div className={styles.achievementCard} onClick={() => { void trigger('success') }}>
-      <div className={styles.achievementIcon}>
-        {imageUrl
-          ? <img src={imageUrl} alt={item.achievement.name ?? ''} className={styles.achievementImg} />
-          : <span>🏅</span>
-        }
-      </div>
-      <div className={styles.achievementBody}>
-        <p className={styles.achievementName}>{item.achievement.name ?? 'Достижение'}</p>
-        {item.achievement.description && (
-          <p className={styles.achievementDesc}>{item.achievement.description}</p>
-        )}
-        <p className={styles.achievementDate}>📅 {formatDate(item.receivedAtUtc)}</p>
-      </div>
-    </div>
-  )
-}
 
 export function AchievementsPage() {
   const user = useUser()
   const { data, isLoading } = useUserAchievements(user.id)
   const achievements = data?.data?.items ?? []
   const [showHelp, setShowHelp] = useState(false)
+  const [selected, setSelected] = useState<UserAchievementApiModel | null>(null)
+
+  const totalSlots = Math.max(TOTAL_SLOTS, Math.ceil((achievements.length + 3) / 3) * 3)
+  const lockedCount = totalSlots - achievements.length
 
   return (
     <div className={`container ${styles.page}`}>
@@ -60,7 +36,7 @@ export function AchievementsPage() {
             <ul className={styles.helpList}>
               <li className={styles.helpItem}>
                 <span className={styles.helpIcon}>🏆</span>
-                <span>Достижения - это награды за активное участие в событиях и выполнение заданий</span>
+                <span>Достижения — это награды за активное участие в событиях и выполнение заданий</span>
               </li>
               <li className={styles.helpItem}>
                 <span className={styles.helpIcon}>🎯</span>
@@ -75,19 +51,23 @@ export function AchievementsPage() {
         </BottomSheet>
       )}
 
+      {selected && (
+        <AchievementDetailSheet item={selected} onClose={() => setSelected(null)} />
+      )}
 
       {isLoading ? (
-        <div className={styles.list}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className={styles.skeletonRow} />
+        <div className={styles.grid}>
+          {Array.from({ length: TOTAL_SLOTS }).map((_, i) => (
+            <div key={i} className={styles.skeletonBadge} />
           ))}
         </div>
-      ) : achievements.length === 0 ? (
-        <p className={styles.empty}>Достижений пока нет. Выполняйте задания!</p>
       ) : (
-        <div className={styles.list}>
+        <div className={styles.grid}>
           {achievements.map((item) => (
-            <AchievementCard key={item.id} item={item} />
+            <AchievementBadge key={item.id} item={item} size={104} onClick={() => setSelected(item)} />
+          ))}
+          {Array.from({ length: lockedCount }).map((_, i) => (
+            <LockedAchievementBadge key={`locked-${i}`} size={104} />
           ))}
         </div>
       )}

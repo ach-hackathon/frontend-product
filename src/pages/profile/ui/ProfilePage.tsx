@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useWebHaptics } from 'web-haptics/react'
-import { useUser, useUserAchievements } from '@/entities/user'
+import { useUser, useUserAchievements, AchievementBadge, LockedAchievementBadge, AchievementDetailSheet } from '@/entities/user'
 import type { UserAchievementApiModel } from '@/entities/user'
 import { useUserGifts, UserGiftStatus } from '@/entities/gift'
 import type { UserGiftApiModel } from '@/entities/gift'
@@ -16,31 +16,6 @@ function formatDate(iso: string): string {
   return `${day} ${month} ${year}`
 }
 
-function LockedBadge() {
-  return (
-    <div className={styles.lockedBadge}>
-      <img src="/icon-achievement-locked.png" alt="" aria-hidden="true" className={styles.lockedImg} />
-    </div>
-  )
-}
-
-function AchievementBadge({ item }: { item: UserAchievementApiModel }) {
-  const { data: imageUrl } = useImageUrl(item.achievement.fileId)
-  const { trigger } = useWebHaptics()
-
-  return (
-    <button
-      className={styles.unlockedBadge}
-      onClick={() => { void trigger('success') }}
-      aria-label={item.achievement.name ?? 'Достижение'}
-    >
-      {imageUrl
-        ? <img src={imageUrl} alt={item.achievement.name ?? ''} className={styles.badgeImg} />
-        : <span className={styles.badgeEmoji}>🏅</span>
-      }
-    </button>
-  )
-}
 
 const GIFT_PAGE_URL = import.meta.env.VITE_GIFT_PAGE_URL as string
 
@@ -91,6 +66,7 @@ const XP_PER_LEVEL = 500
 export function ProfilePage() {
   const user = useUser()
   const navigate = useNavigate()
+  const [selectedAchievement, setSelectedAchievement] = useState<UserAchievementApiModel | null>(null)
   const { data: achievementsData, isLoading: achievementsLoading } = useUserAchievements(user.id)
   const { data: giftsData, isLoading: giftsLoading } = useUserGifts(user.id)
 
@@ -118,6 +94,9 @@ export function ProfilePage() {
 
   return (
     <div className={styles.page}>
+      {selectedAchievement && (
+        <AchievementDetailSheet item={selectedAchievement} onClose={() => setSelectedAchievement(null)} />
+      )}
       {/* ── Hero banner ── */}
       <div className={styles.hero}>
 <img src="/hero-mascot.png" alt="" className={styles.mascot} aria-hidden="true" />
@@ -195,10 +174,10 @@ export function ProfilePage() {
               : (
                 <>
                   {previewAchievements.map((item) => (
-                    <AchievementBadge key={item.id} item={item} />
+                    <AchievementBadge key={item.id} item={item} size={80} onClick={() => setSelectedAchievement(item)} />
                   ))}
                   {Array.from({ length: lockedCount }).map((_, i) => (
-                    <LockedBadge key={`locked-${i}`} />
+                    <LockedAchievementBadge key={`locked-${i}`} size={68} />
                   ))}
                 </>
               )

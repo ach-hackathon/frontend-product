@@ -1,0 +1,63 @@
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: transform 0.1s ease;
+}
+
+.badge:active {
+  transform: scale(0.93);
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.emoji {
+  font-size: 2.8rem;
+  line-height: 1;
+}
+
+.locked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lockedImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.shake {
+  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes shake {
+  0%   { transform: rotate(0deg) scale(1); }
+  15%  { transform: rotate(-12deg) scale(0.92); }
+  30%  { transform: rotate(10deg) scale(0.95); }
+  45%  { transform: rotate(-8deg) scale(0.97); }
+  60%  { transform: rotate(6deg) scale(0.98); }
+  75%  { transform: rotate(-4deg) scale(1); }
+  90%  { transform: rotate(2deg) scale(1); }
+  100% { transform: rotate(0deg) scale(1); }
+}
