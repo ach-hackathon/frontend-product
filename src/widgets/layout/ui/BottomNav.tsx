@@ -1,77 +1,56 @@
 import { NavLink } from 'react-router-dom'
 import styles from './BottomNav.module.css'
 
-function IconHome({ active }: { active: boolean }) {
+function IconCalendar() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M3 10.5L12 3L21 10.5V20C21 20.5523 20.5523 21 20 21H15V15H9V21H4C3.44772 21 3 20.5523 3 20V10.5Z"
-        stroke="currentColor"
-        strokeWidth={active ? '2.2' : '1.8'}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill={active ? 'currentColor' : 'none'}
-        fillOpacity={active ? '0.12' : '0'}
-      />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="2" />
+      <path d="M3 10H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M8 3V7M16 3V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="8" cy="15" r="1.2" fill="currentColor" />
+      <circle cx="12" cy="15" r="1.2" fill="currentColor" />
+      <circle cx="16" cy="15" r="1.2" fill="currentColor" />
     </svg>
   )
 }
 
-function IconTrophy({ active }: { active: boolean }) {
+function IconGift() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M8 21H16M12 17V21M7 4H17V11C17 13.7614 14.7614 16 12 16C9.23858 16 7 13.7614 7 11V4Z"
-        stroke="currentColor"
-        strokeWidth={active ? '2.2' : '1.8'}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M7 6H4C4 9 5.5 11 7 11M17 6H20C20 9 18.5 11 17 11"
-        stroke="currentColor"
-        strokeWidth={active ? '2.2' : '1.8'}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="10" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path d="M3 10H21V13H3V10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M12 10V21" stroke="currentColor" strokeWidth="2" />
+      <path d="M12 10C12 10 9 10 7.5 8.5C6 7 7 5 8.5 5C10 5 12 8 12 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M12 10C12 10 15 10 16.5 8.5C18 7 17 5 15.5 5C14 5 12 8 12 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
     </svg>
   )
 }
 
 function IconQr() {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" />
       <rect x="5" y="5" width="3" height="3" fill="currentColor" />
-      <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" />
       <rect x="16" y="5" width="3" height="3" fill="currentColor" />
-      <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" />
       <rect x="5" y="16" width="3" height="3" fill="currentColor" />
-      <path d="M14 14H17V17H14V14Z" fill="currentColor" />
-      <path d="M17 17H20V20H17V17Z" fill="currentColor" />
-      <path d="M14 17H17" stroke="currentColor" strokeWidth="2" />
-      <path d="M17 14H20" stroke="currentColor" strokeWidth="2" />
-      <path d="M20 17V20" stroke="currentColor" strokeWidth="2" />
+      <rect x="14" y="14" width="3" height="3" fill="currentColor" />
+      <rect x="18" y="14" width="3" height="3" fill="currentColor" />
+      <rect x="14" y="18" width="3" height="3" fill="currentColor" />
+      <rect x="18" y="18" width="3" height="3" fill="currentColor" />
     </svg>
   )
 }
 
-function IconProfile({ active }: { active: boolean }) {
+function IconProfile() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle
-        cx="12"
-        cy="8"
-        r="4"
-        stroke="currentColor"
-        strokeWidth={active ? '2.2' : '1.8'}
-        fill={active ? 'currentColor' : 'none'}
-        fillOpacity={active ? '0.12' : '0'}
-      />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
       <path
         d="M4 20C4 17.2386 7.58172 15 12 15C16.4183 15 20 17.2386 20 20"
         stroke="currentColor"
-        strokeWidth={active ? '2.2' : '1.8'}
+        strokeWidth="2"
         strokeLinecap="round"
       />
     </svg>
@@ -81,43 +60,28 @@ function IconProfile({ active }: { active: boolean }) {
 export function BottomNav() {
   return (
     <nav className={styles.nav}>
-      <NavLink to="/" end className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`}>
-        {({ isActive }) => (
-          <>
-            <span className={styles.iconWrap}>
-              <IconHome active={isActive} />
-            </span>
-            <span className={styles.label}>Главная</span>
-          </>
-        )}
+      <NavLink to="/" end className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Главная">
+        <span className={styles.iconWrap}>
+          <IconCalendar />
+        </span>
       </NavLink>
 
-      <NavLink to="/achievements" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`}>
-        {({ isActive }) => (
-          <>
-            <span className={styles.iconWrap}>
-              <IconTrophy active={isActive} />
-            </span>
-            <span className={styles.label}>Достижения</span>
-          </>
-        )}
+      <NavLink to="/achievements" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Достижения">
+        <span className={styles.iconWrap}>
+          <IconGift />
+        </span>
       </NavLink>
 
-      <NavLink to="/scan" className={({ isActive }) => `${styles.scanTab} ${isActive ? styles.scanTabActive : ''}`} aria-label="Сканировать QR-код">
-        <span className={styles.scanCircle}>
+      <NavLink to="/scan" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Сканировать">
+        <span className={styles.iconWrap}>
           <IconQr />
         </span>
       </NavLink>
 
-      <NavLink to="/profile" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`}>
-        {({ isActive }) => (
-          <>
-            <span className={styles.iconWrap}>
-              <IconProfile active={isActive} />
-            </span>
-            <span className={styles.label}>Профиль</span>
-          </>
-        )}
+      <NavLink to="/profile" className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`} aria-label="Профиль">
+        <span className={styles.iconWrap}>
+          <IconProfile />
+        </span>
       </NavLink>
     </nav>
   )
