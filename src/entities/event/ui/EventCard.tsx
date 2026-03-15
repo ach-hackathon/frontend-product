@@ -8,14 +8,70 @@ interface EventCardProps {
   variant?: 'card' | 'row'
 }
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short' }).format(new Date(iso))
+function formatDateRange(start: string, end?: string | null): string {
+  const fmt = (iso: string) =>
+    new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }).format(new Date(iso))
+  return end ? `${fmt(start)} – ${fmt(end)}` : fmt(start)
 }
 
 function tasksLabel(count: number): string {
   if (count === 1) return '1 задание'
   if (count < 5) return `${count} задания`
   return `${count} заданий`
+}
+
+function IconCalendar() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M2 7H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M5 2V4M11 2V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function IconChevron() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function RowView({ event }: { event: EventApiModel }) {
+  const { data: imageUrl } = useImageUrl(event.fileId)
+  const tasksCount = event.events?.length ?? 0
+
+  return (
+    <Link to={`/event/${event.id}`} className={styles.row}>
+      <div className={styles.rowThumb}>
+        {imageUrl
+          ? <img src={imageUrl} alt={event.name ?? ''} className={styles.rowThumbImg} />
+          : <div className={styles.rowThumbPlaceholder} />
+        }
+      </div>
+
+      <div className={styles.rowBody}>
+        <p className={styles.rowName}>{event.name ?? 'Без названия'}</p>
+        <div className={styles.rowDate}>
+          <IconCalendar />
+          <span>{formatDateRange(event.startDate, event.endDate)}</span>
+        </div>
+        <div className={styles.rowBadges}>
+          {tasksCount > 0 && (
+            <span className={styles.badgeTasks}>{tasksLabel(tasksCount)}</span>
+          )}
+          {(event.pointsForCompletions ?? 0) > 0 && (
+            <span className={styles.badgePoints}>+{event.pointsForCompletions} XP</span>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.rowArrow}>
+        <IconChevron />
+      </div>
+    </Link>
+  )
 }
 
 function CardView({ event }: { event: EventApiModel }) {
@@ -39,47 +95,12 @@ function CardView({ event }: { event: EventApiModel }) {
         )}
         <div className={styles.cardFooter}>
           <span className={styles.dateBadge}>
-            📅 {formatDate(event.startDate)}{event.endDate ? ` — ${formatDate(event.endDate)}` : ''}
+            📅 {formatDateRange(event.startDate, event.endDate)}
           </span>
           {tasksCount > 0 && (
             <span className={styles.tasksBadge}>🎯 {tasksLabel(tasksCount)}</span>
           )}
         </div>
-      </div>
-    </Link>
-  )
-}
-
-function RowView({ event }: { event: EventApiModel }) {
-  const { data: imageUrl } = useImageUrl(event.fileId)
-  const tasksCount = event.events?.length ?? 0
-
-  return (
-    <Link to={`/event/${event.id}`} className={styles.row}>
-      <div className={styles.rowThumb}>
-        {imageUrl
-          ? <img src={imageUrl} alt={event.name ?? ''} className={styles.rowThumbImg} />
-          : <div className={styles.rowThumbPlaceholder} />
-        }
-      </div>
-
-      <div className={styles.rowBody}>
-        <p className={styles.rowName}>{event.name ?? 'Без названия'}</p>
-        <div className={styles.rowMeta}>
-          <span className={styles.rowDate}>
-            📅 {formatDate(event.startDate)}{event.endDate ? ` — ${formatDate(event.endDate)}` : ''}
-          </span>
-          {tasksCount > 0 && (
-            <span className={styles.rowTasks}>🎯 {tasksLabel(tasksCount)}</span>
-          )}
-        </div>
-      </div>
-
-      <div className={styles.rowRight}>
-        <span className={styles.rowXp}>⚡ {event.pointsForCompletions}</span>
-        <svg className={styles.rowArrow} width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
       </div>
     </Link>
   )

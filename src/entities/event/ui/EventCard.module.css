@@ -1,3 +1,112 @@
+/* ─── Row view ───────────────────────────────────────────────────────────── */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: #ffffff;
+  border: 2px solid #e4e6e8;
+  box-shadow: 0px 4px 0px #e4e6e8;
+  border-radius: 1.2rem;
+  padding: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+  user-select: none;
+  text-decoration: none;
+  color: inherit;
+}
+
+.row:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 7px 0px #e4e6e8;
+}
+
+.row:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.rowThumb {
+  width: 8.4rem;
+  height: 8.4rem;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.rowThumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rowThumbPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #58cc02 0%, #1cb0f6 100%);
+}
+
+.rowBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.rowName {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  line-height: 1.25;
+}
+
+.rowDate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.rowBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.badgeTasks {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  background-color: #42c8f5;
+  border: none;
+  padding: 0.55rem 1.4rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.badgePoints {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  background-color: #4cd964;
+  border: none;
+  padding: 0.55rem 1.4rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.rowArrow {
+  flex-shrink: 0;
+  color: #c5c5c5;
+  display: flex;
+  align-items: center;
+}
+
 /* ─── Card view ──────────────────────────────────────────────────────────── */
 
 .card {
@@ -63,7 +172,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-4) var(--space-4) var(--space-4);
+  padding: var(--space-4);
 }
 
 .cardName {
@@ -92,120 +201,18 @@
   margin-top: var(--space-1);
 }
 
-/* ─── Row view ───────────────────────────────────────────────────────────── */
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  background-color: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-bottom: 3px solid var(--color-border-shadow);
-  border-radius: var(--radius-xl);
-  padding: var(--space-3) var(--space-4);
-  cursor: pointer;
-  transition: transform 0.1s ease, border-bottom-width 0.1s ease, border-color 0.15s;
-  user-select: none;
-  text-decoration: none;
-  color: inherit;
-}
-
-.row:hover {
-  border-color: var(--color-primary);
-  border-bottom-color: var(--color-primary-shadow);
-}
-
-.row:active {
-  transform: translateY(1px);
-  border-bottom-width: 2px;
-}
-
-.rowThumb {
-  width: 5.6rem;
-  height: 5.6rem;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  flex-shrink: 0;
-  border: 2px solid var(--color-border);
-}
-
-.rowThumbImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.rowThumbPlaceholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #58cc02 0%, #1cb0f6 100%);
-}
-
-.rowBody {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  min-width: 0;
-}
-
-.rowName {
-  font-size: var(--text-base);
-  font-weight: 800;
-  color: var(--color-text);
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.rowMeta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-}
-
-.rowRight {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-2);
-  flex-shrink: 0;
-}
-
-.rowXp {
-  font-size: var(--text-sm);
-  font-weight: 800;
-  color: var(--color-xp-text);
-  background-color: var(--color-xp);
-  border: 1.5px solid var(--color-xp-shadow);
-  padding: 0.2rem 0.7rem;
-  border-radius: var(--radius-full);
-  white-space: nowrap;
-}
-
-.rowArrow {
-  color: var(--color-text-muted);
-}
-
-/* ─── Shared badges ──────────────────────────────────────────────────────── */
-
-.dateBadge,
-.rowDate {
+.dateBadge {
   font-size: var(--text-sm);
   font-weight: 700;
   color: var(--color-text-muted);
 }
 
-.tasksBadge,
-.rowTasks {
+.tasksBadge {
   font-size: var(--text-sm);
   font-weight: 700;
-  color: var(--color-blue-text);
-  background-color: var(--color-blue);
-  border: 1.5px solid var(--color-blue-shadow);
+  color: #fff;
+  background-color: #1cb0f6;
+  border: 1.5px solid #0e9ed8;
   padding: 0.2rem 0.7rem;
   border-radius: var(--radius-full);
 }
