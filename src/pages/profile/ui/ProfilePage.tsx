@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useWebHaptics } from 'web-haptics/react'
 import { useUser, useUserAchievements } from '@/entities/user'
 import type { UserAchievementApiModel } from '@/entities/user'
@@ -9,29 +9,36 @@ import { removeToken } from '@/shared/lib/token'
 import styles from './ProfilePage.module.css'
 
 function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(
-    new Date(iso),
+  const d = new Date(iso)
+  const day = d.getDate()
+  const year = d.getFullYear()
+  const month = new Intl.DateTimeFormat('ru-RU', { month: 'long' }).format(d)
+  return `${day} ${month} ${year}`
+}
+
+function LockedBadge() {
+  return (
+    <div className={styles.lockedBadge}>
+      <img src="/icon-achievement-locked.png" alt="" aria-hidden="true" className={styles.lockedImg} />
+    </div>
   )
 }
 
-function AchievementCard({ item }: { item: UserAchievementApiModel }) {
+function AchievementBadge({ item }: { item: UserAchievementApiModel }) {
   const { data: imageUrl } = useImageUrl(item.achievement.fileId)
   const { trigger } = useWebHaptics()
 
   return (
-    <div className={styles.achievementCard} onClick={() => { void trigger('success') }}>
-      <div className={styles.achievementIcon}>
-        {imageUrl
-          ? <img src={imageUrl} alt={item.achievement.name ?? ''} className={styles.achievementImg} />
-          : <span>🏅</span>
-        }
-      </div>
-      <p className={styles.achievementName}>{item.achievement.name ?? 'Достижение'}</p>
-      {item.achievement.description && (
-        <p className={styles.achievementDesc}>{item.achievement.description}</p>
-      )}
-      <p className={styles.achievementDate}>{formatDate(item.receivedAtUtc)}</p>
-    </div>
+    <button
+      className={styles.unlockedBadge}
+      onClick={() => { void trigger('success') }}
+      aria-label={item.achievement.name ?? 'Достижение'}
+    >
+      {imageUrl
+        ? <img src={imageUrl} alt={item.achievement.name ?? ''} className={styles.badgeImg} />
+        : <span className={styles.badgeEmoji}>🏅</span>
+      }
+    </button>
   )
 }
 
@@ -78,6 +85,9 @@ function GiftCard({ item, userId }: { item: UserGiftApiModel; userId: string }) 
   )
 }
 
+const PREVIEW_COUNT = 4
+const XP_PER_LEVEL = 500
+
 export function ProfilePage() {
   const user = useUser()
   const navigate = useNavigate()
@@ -85,9 +95,17 @@ export function ProfilePage() {
   const { data: giftsData, isLoading: giftsLoading } = useUserGifts(user.id)
 
   const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Аноним'
-  const initials = [user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'
   const achievements = achievementsData?.data?.items ?? []
-  const roles = user.roles?.filter((r) => r.name) ?? []
+  const previewAchievements = achievements.slice(0, PREVIEW_COUNT)
+  const lockedCount = Math.max(0, PREVIEW_COUNT - previewAchievements.length)
+
+  const xp = user.userPoints?.experiencePoints ?? 0
+  const level = user.userPoints?.level ?? 1
+  const points = user.userPoints?.points ?? 0
+  const xpInLevel = xp % XP_PER_LEVEL
+  const xpNextLevel = Math.ceil(xp / XP_PER_LEVEL) * XP_PER_LEVEL || XP_PER_LEVEL
+  const xpProgress = Math.round((xpInLevel / XP_PER_LEVEL) * 100)
+
   const allGifts = giftsData?.data?.items ?? []
   const availableGifts = allGifts.filter((g) => g.status === UserGiftStatus.Pending)
   const receivedGifts = allGifts.filter((g) => g.status === UserGiftStatus.Done)
@@ -99,129 +117,154 @@ export function ProfilePage() {
   }
 
   return (
-    <div className={`container ${styles.page}`}>
+    <div className={styles.page}>
+      {/* ── Hero banner ── */}
       <div className={styles.hero}>
-        <div className={styles.avatar}>{initials}</div>
+<img src="/hero-mascot.png" alt="" className={styles.mascot} aria-hidden="true" />
+      </div>
+
+      {/* ── User info ── */}
+      <div className={styles.userInfo}>
         <h1 className={styles.name}>{fullName}</h1>
         {user.email && <p className={styles.email}>{user.email}</p>}
-        {roles.length > 0 && (
-          <div className={styles.roles}>
-            {roles.map((r) => (
-              <span key={r.id} className={styles.roleBadge}>{r.name}</span>
-            ))}
-          </div>
-        )}
+        <span className={styles.onlineBadge}>
+          <span className={styles.onlineDot} />
+          Онлайн
+        </span>
       </div>
 
-      {/* Stats */}
-      <div className={styles.stats}>
-        <div className={styles.statCard}>
-          <span className={styles.statIcon}>💎</span>
-          <span className={styles.statValue}>{user.userPoints?.points ?? 0}</span>
-          <span className={styles.statLabel}>Баланс</span>
-        </div>
-        {user.userPoints && (
-          <>
-            <div className={styles.statCard}>
-              <span className={styles.statIcon}>🏆</span>
-              <span className={styles.statValue}>{user.userPoints.level}</span>
+      <div className={styles.sections}>
+        {/* ── Level card: XP + Stats ── */}
+        <div className={styles.levelCard}>
+          {user.userPoints && (
+            <div className={styles.xpSection}>
+              <p className={styles.xpTitle}>До следующего уровня</p>
+              <div className={styles.xpSlider}>
+                <div className={styles.xpLabels}>
+                  <span className={styles.xpCurrent}>{xpInLevel} XP</span>
+                  <span className={styles.xpNext}>{xpNextLevel} XP</span>
+                </div>
+                <div className={styles.xpBar}>
+                  <div className={styles.xpFill} style={{ width: `${xpProgress}%` }} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className={styles.statsRow}>
+            <div className={styles.statItem}>
               <span className={styles.statLabel}>Уровень</span>
+              <div className={styles.statInner}>
+                <img src="/icon-level.png" alt="" className={styles.statIcon} aria-hidden="true" />
+                <span className={styles.statValue}>{level}</span>
+              </div>
             </div>
-            <div className={styles.statCard}>
-              <span className={styles.statIcon}>⚡</span>
-              <span className={styles.statValue}>{user.userPoints.experiencePoints}</span>
-              <span className={styles.statLabel}>Опыт (XP)</span>
+            <div className={styles.statItem}>
+              <span className={styles.statLabel}>Опыт</span>
+              <div className={styles.statInner}>
+                <img src="/icon-xp.png" alt="" className={styles.statIcon} aria-hidden="true" />
+                <span className={styles.statValue}>{xp}</span>
+              </div>
             </div>
-          </>
-        )}
-      </div>
+            <div className={styles.statItem}>
+              <span className={styles.statLabel}>Очки</span>
+              <div className={styles.statInner}>
+                <img src="/icon-points.png" alt="" className={styles.statIcon} aria-hidden="true" />
+                <span className={styles.statValue}>{points}</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {/* Info */}
-      <div className={styles.info}>
+        {/* ── Achievements preview ── */}
+        <section className={styles.achievementsSection}>
+          <div className={styles.achievementsHeader}>
+            <h2 className={styles.achievementsTitle}>Достижения</h2>
+            <Link to="/achievements" className={styles.achievementsLink}>
+              <span>Все</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 18l6-6-6-6" stroke="#2D58F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+          </div>
+          <div className={styles.achievementsRow}>
+            {achievementsLoading
+              ? Array.from({ length: PREVIEW_COUNT }).map((_, i) => (
+                <div key={i} className={styles.badgeSkeleton} />
+              ))
+              : (
+                <>
+                  {previewAchievements.map((item) => (
+                    <AchievementBadge key={item.id} item={item} />
+                  ))}
+                  {Array.from({ length: lockedCount }).map((_, i) => (
+                    <LockedBadge key={`locked-${i}`} />
+                  ))}
+                </>
+              )
+            }
+          </div>
+        </section>
+
+        {/* ── Gifts ── */}
+        {(giftsLoading || allGifts.length > 0) && (
+          <section className={styles.giftsSection}>
+            <h2 className={styles.giftsTitle}>🎁 Подарки</h2>
+            {giftsLoading ? (
+              <div className={styles.giftsGrid}>
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className={styles.giftSkeleton} />
+                ))}
+              </div>
+            ) : (
+              <>
+                {availableGifts.length > 0 && (
+                  <>
+                    <p className={styles.giftsSubtitle}>Доступны для получения</p>
+                    <div className={styles.giftsGrid}>
+                      {availableGifts.map((item) => (
+                        <GiftCard key={item.id} item={item} userId={user.id} />
+                      ))}
+                    </div>
+                  </>
+                )}
+                {receivedGifts.length > 0 && (
+                  <>
+                    <p className={styles.giftsSubtitle}>Полученные</p>
+                    <div className={styles.giftsGrid}>
+                      {receivedGifts.map((item) => (
+                        <GiftCard key={item.id} item={item} userId={user.id} />
+                      ))}
+                    </div>
+                  </>
+                )}
+                {cancelledGifts.length > 0 && (
+                  <>
+                    <p className={styles.giftsSubtitle}>Отменённые</p>
+                    <div className={styles.giftsGrid}>
+                      {cancelledGifts.map((item) => (
+                        <GiftCard key={item.id} item={item} userId={user.id} />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </section>
+        )}
+
+        {/* ── Registration date ── */}
         {user.registrationDate && (
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>В системе с</span>
-            <span className={styles.infoValue}>{formatDate(user.registrationDate)}</span>
-          </div>
+          <p className={styles.registrationDate}>
+            Зарегистрирован {formatDate(user.registrationDate)}
+          </p>
         )}
-        {(user.applications?.length ?? 0) > 0 && (
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Приложения</span>
-            <span className={styles.infoValue}>{user.applications!.map((a) => a.name).filter(Boolean).join(', ')}</span>
-          </div>
-        )}
+
+        {/* ── Logout ── */}
+        <button className={styles.logoutButton} onClick={handleLogout}>
+          Выйти
+        </button>
       </div>
-
-      {/* Achievements */}
-      <section className={styles.achievementsSection}>
-        <h2 className={styles.achievementsTitle}>🏆 Достижения</h2>
-        {achievementsLoading ? (
-          <div className={styles.achievementsGrid}>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className={styles.achievementSkeleton} />
-            ))}
-          </div>
-        ) : achievements.length === 0 ? (
-          <p className={styles.achievementsEmpty}>Достижений пока нет. Выполняйте задания!</p>
-        ) : (
-          <div className={styles.achievementsGrid}>
-            {achievements.map((item) => (
-              <AchievementCard key={item.id} item={item} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Gifts */}
-      <section className={styles.giftsSection}>
-        <h2 className={styles.giftsTitle}>🎁 Подарки</h2>
-        {giftsLoading ? (
-          <div className={styles.giftsGrid}>
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className={styles.giftSkeleton} />
-            ))}
-          </div>
-        ) : allGifts.length === 0 ? (
-          <p className={styles.giftsEmpty}>Подарков пока нет</p>
-        ) : (
-          <>
-            {availableGifts.length > 0 && (
-              <>
-                <p className={styles.giftsSubtitle}>Доступны для получения</p>
-                <div className={styles.giftsGrid}>
-                  {availableGifts.map((item) => (
-                    <GiftCard key={item.id} item={item} userId={user.id} />
-                  ))}
-                </div>
-              </>
-            )}
-            {receivedGifts.length > 0 && (
-              <>
-                <p className={styles.giftsSubtitle}>Полученные</p>
-                <div className={styles.giftsGrid}>
-                  {receivedGifts.map((item) => (
-                    <GiftCard key={item.id} item={item} userId={user.id} />
-                  ))}
-                </div>
-              </>
-            )}
-            {cancelledGifts.length > 0 && (
-              <>
-                <p className={styles.giftsSubtitle}>Отменённые</p>
-                <div className={styles.giftsGrid}>
-                  {cancelledGifts.map((item) => (
-                    <GiftCard key={item.id} item={item} userId={user.id} />
-                  ))}
-                </div>
-              </>
-            )}
-          </>
-        )}
-      </section>
-
-      <button className={styles.logoutButton} onClick={handleLogout}>
-        Выйти
-      </button>
     </div>
   )
 }
