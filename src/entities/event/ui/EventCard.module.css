@@ -44,7 +44,7 @@
 .rowThumbPlaceholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #58cc02 0%, #1cb0f6 100%);
+  background: linear-gradient(135deg, #ff6a00 0%, #fd8509 60%, #ffb347 100%);
 }
 
 .rowBody {
@@ -142,7 +142,7 @@
 .cardImgPlaceholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #58cc02 0%, #1cb0f6 100%);
+  background: linear-gradient(135deg, #ff6a00 0%, #fd8509 60%, #ffb347 100%);
 }
 
 .cardXp {

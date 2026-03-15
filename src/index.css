@@ -104,10 +104,10 @@ a {
   --color-text: #3c3c3c;
   --color-text-muted: #777777;
 
-  /* Green — primary */
-  --color-primary: #58cc02;
-  --color-primary-hover: #46a302;
-  --color-primary-shadow: #58a700;
+  /* Orange — primary */
+  --color-primary: #fd8509;
+  --color-primary-hover: #e07508;
+  --color-primary-shadow: #c96700;
   --color-primary-text: #ffffff;
 
   /* Yellow — XP/points */
