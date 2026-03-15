@@ -1,0 +1,16 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.content {
+  flex: 1;
+  /*
+   * Резервируем место под фиксированный навбар.
+   * safe-area-inset-bottom — динамическая переменная: учитывает home-indicator
+   * на iPhone и меняется когда браузерный UI показывается/скрывается.
+   * 5.6rem — высота самого навбара.
+   */
+  padding-bottom: calc(5.6rem + env(safe-area-inset-bottom, 0px));
+}

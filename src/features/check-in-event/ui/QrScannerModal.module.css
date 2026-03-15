@@ -1,0 +1,97 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 900;
+  color: var(--color-text);
+}
+
+.closeButton {
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  border-bottom: 3px solid var(--color-border-shadow);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scannerWrapper {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  /* высота подбирается под соотношение видео ~4:3 */
+  min-height: 24rem;
+}
+
+.skeleton {
+  width: 100%;
+  height: 100%;
+  min-height: 24rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #efefef 25%, #f9f9f9 50%, #efefef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skeleton::after {
+  content: '📷';
+  font-size: 4rem;
+  opacity: 0.3;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.5; }
+}
+
+.cameraError {
+  padding: var(--space-5);
+  background: #fff0f0;
+  border: 2px solid var(--color-red);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-red);
+  text-align: center;
+}
+
+.scanner {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.hint {
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}

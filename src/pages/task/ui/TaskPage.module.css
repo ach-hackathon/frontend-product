@@ -1,0 +1,373 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Hero ───────────────────────────────────────────────────────────────── */
+
+.heroWrapper {
+  position: relative;
+  width: 100%;
+  height: 28rem;
+}
+
+@media (min-width: 768px) {
+  .heroWrapper {
+    height: 36rem;
+  }
+}
+
+.hero {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-blue);
+  background-image: linear-gradient(135deg, #1cb0f6 0%, #58cc02 100%);
+  background-size: cover;
+  background-position: center;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.05) 40%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+}
+
+/* ─── Back button ────────────────────────────────────────────────────────── */
+
+.backButton {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 10;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-size: var(--text-lg);
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Hero content ───────────────────────────────────────────────────────── */
+
+.heroContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-bottom: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.xpBadge {
+  align-self: flex-start;
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-xp-text);
+  background-color: var(--color-xp);
+  border: 2px solid var(--color-xp-shadow);
+  padding: 0.3rem 1rem;
+  border-radius: var(--radius-full);
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 3.6rem;
+  }
+}
+
+/* ─── Content ────────────────────────────────────────────────────────────── */
+
+.content {
+  padding-block: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ─── Badge row ──────────────────────────────────────────────────────────── */
+
+.badgeRow {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.conditionBadge,
+.typeBadge {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  padding: 0.4rem 1.2rem;
+  border-radius: var(--radius-full);
+  border: 2px solid;
+}
+
+.conditionBadge {
+  color: var(--color-primary-text);
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-shadow);
+}
+
+.typeBadge {
+  color: var(--color-text-muted);
+  background-color: var(--color-bg);
+  border-color: var(--color-border);
+}
+
+/* ─── Scan button ────────────────────────────────────────────────────────── */
+
+.scanButton {
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-primary);
+  border: 2px solid var(--color-primary-shadow);
+  border-bottom: 4px solid var(--color-primary-shadow);
+  color: var(--color-primary-text);
+  font-size: var(--text-base);
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.scanButton:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.scanButton:active:not(:disabled) {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+}
+
+.scanButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Check-in result ────────────────────────────────────────────────────── */
+
+.resultCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background-color: #f0fce8;
+  border: 2px solid var(--color-primary);
+  border-bottom: 4px solid var(--color-primary-shadow);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+}
+
+.resultIcon {
+  font-size: 3.2rem;
+  flex-shrink: 0;
+}
+
+.resultTitle {
+  font-size: var(--text-base);
+  font-weight: 900;
+  color: var(--color-text);
+}
+
+.resultPoints {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-top: 0.2rem;
+}
+
+.resultCampaign {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  color: var(--color-xp-text);
+  background: var(--color-xp);
+  border: 1.5px solid var(--color-xp-shadow);
+  border-radius: var(--radius-full);
+  padding: 0.2rem 0.8rem;
+  margin-top: var(--space-2);
+  display: inline-block;
+}
+
+.checkInError {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-red);
+  background-color: #fff0f0;
+  border: 2px solid var(--color-red);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* ─── Description ────────────────────────────────────────────────────────── */
+
+.description {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+/* ─── Sections ───────────────────────────────────────────────────────────── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  font-size: var(--text-xl);
+  font-weight: 900;
+  color: var(--color-text);
+}
+
+/* ─── QR Code ────────────────────────────────────────────────────────────── */
+
+.qrWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.qrImage {
+  width: 20rem;
+  max-width: 100%;
+  border-radius: var(--radius-lg);
+  border: 3px solid var(--color-border);
+}
+
+/* ─── Location ───────────────────────────────────────────────────────────── */
+
+.locationText {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-bottom: 3px solid var(--color-border-shadow);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+}
+
+/* ─── Rewards ────────────────────────────────────────────────────────────── */
+
+.rewardList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rewardCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-bottom: 3px solid var(--color-border-shadow);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+.rewardIcon {
+  font-size: 2.4rem;
+  flex-shrink: 0;
+}
+
+.rewardName {
+  font-size: var(--text-base);
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.rewardDesc {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+}
+
+/* ─── Skeleton ───────────────────────────────────────────────────────────── */
+
+.skeletonHero {
+  width: 100%;
+  height: 28rem;
+  background: linear-gradient(90deg, #b0d4f0 25%, #d0e8f8 50%, #b0d4f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@media (min-width: 768px) {
+  .skeletonHero {
+    height: 36rem;
+  }
+}
+
+.skeletonTitle {
+  height: 3.6rem;
+  width: 70%;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, #efefef 25%, #f9f9f9 50%, #efefef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonMeta {
+  height: 3.2rem;
+  width: 40%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, #efefef 25%, #f9f9f9 50%, #efefef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonBody {
+  height: 12rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #efefef 25%, #f9f9f9 50%, #efefef 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Error ──────────────────────────────────────────────────────────────── */
+
+.errorPage {
+  padding-block: var(--space-8);
+}
+
+.error {
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  font-weight: 700;
+  text-align: center;
+}
